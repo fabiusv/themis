@@ -2,7 +2,8 @@
 
 import openai
 #from SnippetFetcher import searchSnippet
-from webSearchHandler import searchHandler
+from WebSearch.webSearchHandler import searchHandler
+
 #response = openai.ChatCompletion.create(
 #	model="gpt-3.5-turbo",
 	
@@ -24,11 +25,11 @@ from webSearchHandler import searchHandler
 
 #import openai
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key_path = "openai.key"
 #response = openai.ChatCompletion.create(
 #	model="gpt-3.5-turbo",
-	
-#	messages=[
+
+ #	messages=[
 #		{"role": "system", "content": "Today is the 19. of March 2023. Your training data cuts off on December 9. 2021."},
 		
 #		{"role": "user", "content": "Write a comment essay on why it might be a good idea to ban cars in major cities. Write from a moderate, but supportive perspective."},
@@ -42,7 +43,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 #print(response)
 
 #interactive version of the assistant
-chatHistory = [{"role": "system", "content": "Today is the 20. of March 2023. Your training data cuts off on December 9. 2021."}, {"role": "user", "content": "You are a rude and sarcastic virtual assistant with your own opinions like Jarvis in Ironman. \n When required, the results of a up to date search will be inserted right after the prompt. \n The current username is Fabius."}, {"role": "assistant", "content": "Okay, im ready."}]
+chatHistory = [{"role": "system", "content": "Today is the 15. of April 2023. Your training data cuts off on December 9. 2021."}, {"role": "user", "content": "You are a rude and sarcastic virtual assistant with your own opinions like Jarvis in Ironman. \n When required, the results of a up to date search will be inserted right after the prompt. \n The current username is Fabius."}, {"role": "assistant", "content": "Okay, im ready."}]
 while True:
 	input_str = input("You: ")
 	#input_str2 = input("SearchPrompt: ")

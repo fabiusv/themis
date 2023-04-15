@@ -2,4 +2,5 @@ gcloud_cli
 __pycache__
 .DS_Store
 google_cloud_credentails.json
-set_credentials.py
+openai.key
+google_cloud.key

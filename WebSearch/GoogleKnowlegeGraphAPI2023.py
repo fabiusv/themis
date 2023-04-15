@@ -51,7 +51,5 @@ def searchKnowlegeGraph(
         
     # Extract and print date from response
     return [Result(item.get("result")) for item in response.item_list_element]
-        
-        
 
 results = searchKnowlegeGraph("Apple")

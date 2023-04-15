@@ -1,3 +1,11 @@
+import os
+import sys
+
+script_dir = os.path.dirname( __file__ )
+mymodule_dir = os.path.join( script_dir, '..', 'WebSearch')
+sys.path.append( mymodule_dir )
+
+
 def searchHandler(input_query):
     import SnippetFetcher
     import PageTextAPI
@@ -14,4 +22,4 @@ def searchHandler(input_query):
     return "No results found"
 
 
-searchHandler("Apple Lineup")
+#searchHandler("Apple Lineup")

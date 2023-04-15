@@ -2,7 +2,8 @@
 def searchPageResult(query):
     import requests
     from bs4 import BeautifulSoup
-    
+    import os
+
     class Response():
         def __init__(self, title, snippet, link):
             self.title = title
@@ -43,8 +44,14 @@ def searchPageResult(query):
 
 
     # define the parameters to be passed to the endpoint
+
+    #load api key from openai.key file
+    
+    with open("google_cloud.key", "r") as f:
+       key = f.read()
+    
     params = {
-        "key": os.getenv("GOOGLE_API_KEY"),
+        "key": key,
         "cx": "26db7d454c06c4fe0",
         "q": query,
     }

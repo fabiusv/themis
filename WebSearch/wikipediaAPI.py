@@ -23,4 +23,4 @@ def searchWikiSummary(search_term):
         return f"Sorry, '{search_term}' could not be found on Wikipedia."
 
 
-summary = get_summary(search_term)
+#summary = get_summary(search_term)
