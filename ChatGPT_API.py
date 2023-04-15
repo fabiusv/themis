@@ -3,7 +3,6 @@
 import openai
 #from SnippetFetcher import searchSnippet
 from webSearchHandler import searchHandler
-#openai.api_key = "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"
 #response = openai.ChatCompletion.create(
 #	model="gpt-3.5-turbo",
 	
