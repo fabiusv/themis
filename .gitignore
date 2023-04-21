@@ -1,6 +1,7 @@
 gcloud_cli
 __pycache__
 .DS_Store
-google_cloud_credentails.json
-openai.key
-google_cloud.key
+client_api_key.json
+openai_key.json
+client_secret.json
+oauth.json
