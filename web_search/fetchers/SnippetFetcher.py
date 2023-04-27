@@ -1,12 +1,36 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def searchSnippet(term, lang="en"):
     
+    def formatSnippet(string):
+        fixed_string = re.sub(r'([a-z])([A-Z])', r'\1 \2', string)
+        fixed_string = fixed_string.replace("Wähle aus, wozu du Feedback geben möchtest Du kannst auch allgemeines Feedback geben Feedback geben", "")
+        fixed_string = re.sub(r'(\D)(\d)', r'\1 \2', fixed_string)
+        fixed_string = fixed_string.replace("Feedback geben", "")
+        fixed_string = fixed_string.replace("Hervorgehobenes Snippet aus dem Web", "")
+
+        try:
+            fixed_string = fixed_string.split("https")[0]
+        except:
+            pass
+        try:
+
+            fixed_string = fixed_string.split("Andere suchten")[0]
+        except:
+            pass
+
+        try:
+            #fixed_string = fixed_string.replace(".", ".\n")
+            pass
+        except:
+            pass
+
+        return fixed_string
 
     def formatURL(searchterm, lang="en"):
         inquiry = ""
-        #eventuell auch einfach ganze frage als query nehmen  https://www.google.com/search?q=1%2B1
         
         if inquiry == "":
             query = searchterm
@@ -23,6 +47,7 @@ def searchSnippet(term, lang="en"):
         url = '+'.join(url)
         if lang == "en":
             url = "https://www.google.com/search?q=" + url
+            print("Englisch")
         elif lang == "de":
             url = "https://www.google.de/search?q=" + url
         else:
@@ -30,7 +55,6 @@ def searchSnippet(term, lang="en"):
 
         return url
 
-    # Define the headers for the request
     if lang == "en":
         accept_lang = "en-US,en;q=0.5"
     elif lang == "de":
@@ -48,12 +72,10 @@ def searchSnippet(term, lang="en"):
         "TE": "Trailers",
     }
 
-    # Send a request to the website with the specified headers
-    url = formatURL(term)
+    url = formatURL(term, lang)
 
     response = requests.get(url, headers=headers)
 
-    # Parse the HTML content with BeautifulSoup
     soup = BeautifulSoup(response.content, "html.parser")
     
     #save html file
@@ -79,13 +101,15 @@ def searchSnippet(term, lang="en"):
     if target_class:
         target_element = soup.find("div", {"class": target_class})
         target_text = target_element.text.strip()
+        
         target_text = target_text.split("Wird auch oft gesucht")[0]
-        if target_text == "Feedback geben":
+        if target_text == "Feedback geben" or target_text == "Informationen zu hervorgehobenen Snippets•Feedback geben":
             return None
-        return target_text
+        return formatSnippet(target_text)
     #    print(f"The text of the element with class '{target_class}': '{target_text}'")
     else:
         print("Could not find the class that contains 'Hervorgehobenes Snippet aus dem Web'")
         return None
-#
-#print(searchSnippet("What is Apples current phone lineup?"))
+
+
+#print(searchSnippet(", lang="en"))

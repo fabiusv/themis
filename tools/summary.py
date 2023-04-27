@@ -9,7 +9,7 @@ from sumy.summarizers.lsa import LsaSummarizer as Summarizer
 from sumy.nlp.stemmers import Stemmer
 from sumy.utils import get_stop_words
     
-def summarize(url, lang="en"):
+def summarize_website(url, lang="en"):
     
     if lang == "en":
         LANGUAGE = "english"
@@ -38,4 +38,4 @@ def summarize(url, lang="en"):
     return text
 
  
-print(summarize(url="https://de.wikipedia.org/wiki/Mainzer_Republik", lang="de"))
+#print(summarize(url="https://de.wikipedia.org/wiki/Mainzer_Republik", lang="de"))

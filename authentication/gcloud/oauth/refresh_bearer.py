@@ -40,5 +40,5 @@ json_credentials = {
 }
 
 
-with open("oauth.json", "w") as f:
+with open(parent_dir + "/oauth/oauth.json", "w") as f:
     json.dump(json_credentials, f, indent=4)

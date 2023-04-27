@@ -8,6 +8,7 @@ def searchKnowlegeGraph(
     limit: int = 20,
 ):
 
+
     class Result:
         def __init__(self, result):
             self.name = result.get('name')
