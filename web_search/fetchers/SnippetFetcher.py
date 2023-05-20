@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 
 def searchSnippet(term, lang="en"):
-    
+    print("snippet fetcher started for term: " + term)
     def formatSnippet(string):
         fixed_string = re.sub(r'([a-z])([A-Z])', r'\1 \2', string)
         fixed_string = fixed_string.replace("Wähle aus, wozu du Feedback geben möchtest Du kannst auch allgemeines Feedback geben Feedback geben", "")
@@ -26,7 +26,7 @@ def searchSnippet(term, lang="en"):
             pass
         except:
             pass
-
+        print("formatted snippet: " + fixed_string)
         return fixed_string
 
     def formatURL(searchterm, lang="en"):
@@ -101,15 +101,17 @@ def searchSnippet(term, lang="en"):
     if target_class:
         target_element = soup.find("div", {"class": target_class})
         target_text = target_element.text.strip()
-        
+        print(target_text)
         target_text = target_text.split("Wird auch oft gesucht")[0]
+        target_text = target_text.split("Andere suchten auch nach")[0]
         if target_text == "Feedback geben" or target_text == "Informationen zu hervorgehobenen Snippets•Feedback geben":
+            print("Could not find a snippet")
             return None
+        print("unformatted snippet: " + target_text)
         return formatSnippet(target_text)
-    #    print(f"The text of the element with class '{target_class}': '{target_text}'")
     else:
         print("Could not find the class that contains 'Hervorgehobenes Snippet aus dem Web'")
         return None
 
 
-#print(searchSnippet(", lang="en"))
+#print(searchSnippet("How many children does Elon Musk have?", lang="en"))

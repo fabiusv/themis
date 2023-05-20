@@ -32,7 +32,7 @@ def fetch_google_results(query, lang="en"):
     }
     headers = {'Accept': 'application/json'}
     response = requests.get(url, params=params, headers=headers)
-
+    
     pages = []
     for item in response.json()["items"]:
         pages.append(Page(item["title"], item["link"]))

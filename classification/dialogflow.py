@@ -22,14 +22,14 @@ def detect_intent_texts(session_id, texts, lang):
     data = {
         'queryInput': {
             'text': {
-                'text': 'Wie viel Uhr ist es in Neustadt?',
-                'languageCode': 'de'
+                'text': texts,
+                'languageCode': lang
             }
         }
     }
 
     response = requests.post(url, headers=headers, json=data)
-    
+    print(response.json())
     print(response.json()["queryResult"]["parameters"])
 
-print(detect_intent_texts("1", "Wie viel Uhr ist es in Neustadt?", "de"))
+print(detect_intent_texts("1", "When will WWDC take place?", "en"))
