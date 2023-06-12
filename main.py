@@ -2,6 +2,7 @@
 import openai
 import web_search
 import json
+from classification import dialogflow
 #print(web_search.searchHandler("Wer hat den letzten Superbowl gewonnen?"))
 #quit()
 
@@ -32,6 +33,7 @@ openai.api_key = json.load(open("authentication/openai/openai_key.json"))["api_k
 chatHistory = ChatHistory([ ChatMessage("system", "You are a virtual assistant like Jarvis in Ironman"), ChatMessage("user", "Today is the 18. of May. The year is 2023. At times you will recieve a snippet with the required Information to respond to the user question.\n The current username is Fabius.", 1), ChatMessage("assistant", "Okay, im ready.", 2)])
 while True:
 	input_str = input("You: ")
+	#dialogflow_response = dialogflow.detect_intent_texts(1, input_str)
 
 	chatHistory.messages.append(ChatMessage("user", input_str, False))
 

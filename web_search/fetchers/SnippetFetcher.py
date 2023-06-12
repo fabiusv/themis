@@ -104,7 +104,7 @@ def searchSnippet(term, lang="en"):
         print(target_text)
         target_text = target_text.split("Wird auch oft gesucht")[0]
         target_text = target_text.split("Andere suchten auch nach")[0]
-        if target_text == "Feedback geben" or target_text == "Informationen zu hervorgehobenen Snippets•Feedback geben":
+        if target_text == "Feedback geben" or target_text == "Informationen zu hervorgehobenen Snippets•Feedback geben" or "Laut deiner IP-Adresse" in target_text:
             print("Could not find a snippet")
             return None
         print("unformatted snippet: " + target_text)

@@ -1,7 +1,7 @@
 from .fetchers import PageTextAPI, SnippetFetcher
 from .helpers import QueryGenerator, web_formatter
 from tools import summary
-
+import requests
 
 def searchHandler(chatHistory, lang="en"):
     input_query = QueryGenerator.generateQueries(chatHistory, lang)
@@ -20,10 +20,13 @@ def searchHandler(chatHistory, lang="en"):
     else:
         pages = PageTextAPI.fetch_google_results(input_query, lang)
         #print(pages)
-        
+        print("page titles")
         for page in pages[0:3]:
-            return web_formatter.format_website(summary.summarize_website(page.url, lang), input_query, lang)
             print(page.title)
+            #return web_formatter.format_website(requests.get(page.url).text, input_query, lang)
+            
+            return web_formatter.format_website(summary.summarize_website(page.url, lang), input_query, lang)
+            
             print(pages.url)
             print("\n")
         
