@@ -14,10 +14,10 @@ class Page():
 
 def fetch_google_results(query, lang="en"):
     import requests
-
+    
     key = json.load(open("authentication/gcloud/client_api_key.json"))["api_key"]
     url = 'https://customsearch.googleapis.com/customsearch/v1'
-
+    
     if lang == "en":
         cx = "c4415157c33794318"
         print("English")
