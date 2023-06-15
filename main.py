@@ -1,12 +1,22 @@
 import openai
 import json
+import web_search
+from ChatClass import ChatMessage, Conversation 
 
+#initialize openai api
 openai.api_key = json.load(open("authentication/openai/openai_key.json"))["api_key"]
+
+#Initialize chat conversation
+conversation = Conversation()
+conversation.messages = [ChatMessage("system", "The current date is: 15. June. The year is 2023")]
+
+
+#search_insert = web_search.searchHandler(chatHistory)
 
 response = openai.ChatCompletion.create(
 			model="gpt-3.5-turbo-0613",
 
-			messages=[{"role": "system", "content": "The current date is: 15. June. The year is 2023!"}, {"role": "user", "content": "Who won the superbowl in 2020?"}],
+			messages=[],
 
 			functions=[
                 #Google Search
@@ -75,4 +85,5 @@ response = openai.ChatCompletion.create(
 			],
 			function_call="auto",
 		)
+
 print(response)

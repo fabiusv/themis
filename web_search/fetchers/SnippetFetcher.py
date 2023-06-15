@@ -114,4 +114,4 @@ def searchSnippet(term, lang="en"):
         return None
 
 
-#print(searchSnippet("How many children does Elon Musk have?", lang="en"))
+#print(searchSnippet("Super Bowl 2020 winner?", lang="en"))
