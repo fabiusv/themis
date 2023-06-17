@@ -1,5 +1,5 @@
 import wikipediaapi
-
+#from tools import summary
 # Create a Wikipedia API object
 
 
@@ -15,12 +15,16 @@ def searchWikiSummary(search_term, lang="en"):
     # Check if the page exists
     if page.exists():
         # Return the summary of the page
-        print(page.text)
-        return page.summary
+        #result = summarize_text(page.text, lang)
+
+        return page.summary 
+        #return page.summary
         
     else:
         # If the page does not exist, return an error message
         return f"Sorry, '{search_term}' could not be found on Wikipedia."
-
+        
 
 #summary = get_summary(search_term)
+#
+#print(searchWikiSummary("Elon Musk"))

@@ -35,7 +35,31 @@ def summarize_website(url, lang="en"):
     for sentence in summary:
         text += str(sentence)
 
-    return text
+
+def summarize_text(text, lang="en"):
+    
+    if lang == "en":
+        LANGUAGE = "english"
+    elif lang == "de":
+        LANGUAGE = "german"
+    else:
+        raise ValueError("Language not supported")
+
+    SENTENCES_COUNT = 10
+
+    parser = PlaintextParser.from_string(text, Tokenizer(LANGUAGE))
+    # or for plain text files
+    # parser = PlaintextParser.from_file("document.txt", Tokenizer(LANGUAGE))
+    # parser = PlaintextParser.from_string("Check this out.", Tokenizer(LANGUAGE))
+    stemmer = Stemmer(LANGUAGE)
+
+    summarizer = Summarizer(stemmer)
+    summarizer.stop_words = get_stop_words(LANGUAGE)
+    
+    summary = summarizer(parser.document, SENTENCES_COUNT)
+    text = ""
+    for sentence in summary:
+        text += str(sentence)
 
  
 #print(summarize(url="https://de.wikipedia.org/wiki/Mainzer_Republik", lang="de"))

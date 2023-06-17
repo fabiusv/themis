@@ -20,10 +20,10 @@ def fetch_google_results(query, lang="en"):
     
     if lang == "en":
         cx = "c4415157c33794318"
-        print("English")
+        #print("English")
     elif lang == "de":
         cx = "6597a0405f56c4d3e"
-        print("Deutsch")
+        #print("Deutsch")
 
     params = {
         'cx': cx,
