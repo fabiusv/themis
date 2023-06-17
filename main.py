@@ -1,6 +1,6 @@
 import openai
 import json
-import web_search
+import functions
 from ChatClass import ChatMessage, Conversation 
 
 #initialize openai api
@@ -8,82 +8,37 @@ openai.api_key = json.load(open("authentication/openai/openai_key.json"))["api_k
 
 #Initialize chat conversation
 conversation = Conversation()
-conversation.messages = [ChatMessage("system", "The current date is: 15. June. The year is 2023")]
+conversation.messages = [ChatMessage("system", "The current date is: 15. June. The year is 2023. If you require real time information, fallback to the realtime_websearch function. This can be used multiple times throughout the conversation.")]
 
+while True:
+	message = input("User: ")
+	conversation.messages.append(ChatMessage("user", message))
 
-#search_insert = web_search.searchHandler(chatHistory)
+	response = openai.ChatCompletion.create(
+				model="gpt-3.5-turbo-0613",
+				messages=conversation.convertToOpenAI(),
+				functions= functions.openai_function_documentation,
+				function_call="auto",
+			)
+	if response["choices"][0]["message"].get("function_call"):
+		arguments = json.loads(response["choices"][0]["message"]["function_call"]["arguments"])
+		name = response["choices"][0]["message"]["function_call"]["name"]
+		function_response = functions.function_dict[name](arguments)
 
-response = openai.ChatCompletion.create(
-			model="gpt-3.5-turbo-0613",
+		conversation.messages.append(ChatMessage("user", function_response, True))
+		
+		response = openai.ChatCompletion.create(
+				model="gpt-3.5-turbo-0613",
+				messages=conversation.convertToOpenAI(),
+				functions= functions.openai_function_documentation,
+				function_call="auto",
+			)
+		
+		conversation.messages.append(ChatMessage("user", response["choices"][0]["message"]["content"]))
+		print(response["choices"][0]["message"]["content"])
+	else:
+		conversation.messages.append(ChatMessage("user", response["choices"][0]["message"]["content"]))
+		print(response["choices"][0]["message"]["content"])
 
-			messages=[],
+	
 
-			functions=[
-                #Google Search
-				{
-					"name": "google_search",
-					"description": "Search google for a answer to a question",
-					"parameters": {
-						"type": "object",
-						"properties": {
-							"searchquery": {
-								"type": "string",
-								"description": "The unambiguous search query generated from the conversation history",
-							},
-
-						},
-						"required": ["searchquery"],
-					},
-				}, 
-                #Weather
-                {
-                    "name": "weather",
-                    "description": "Get the weather for a location",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "location": {
-                                "type": "string",
-                                "description": "The location to get the weather for",
-                            },
-                        },
-                        "required": ["location"],
-                    },
-                },
-                #Wikipedia
-                {
-                    "name": "wikipedia",
-                    "description": "Get a summary of a wikipedia article",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "topic": {
-                                "type": "string",
-                                "description": "The topic to get the wikipedia article for",
-                            },
-                        },
-                        "required": ["topic"],
-                    },
-                },
-                #Time
-                {
-                    "name": "time",
-                    "description": "Get the current time",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "location": {
-                                "type": "string",
-                                "description": "The location to get the time for",
-                            },
-                        },
-                       # "required": ["location"],
-                    },
-                },
-
-
-			],
-			function_call="auto",
-		)
-
-print(response)
