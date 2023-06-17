@@ -6,9 +6,9 @@ import json
 
 
 class Page():
-    def __init__(self, title, url):
+    def __init__(self, title, url, text=""):
         self.title = title
-        #self.text = text
+        self.text = text
         self.url = url
     
 
@@ -35,6 +35,8 @@ def fetch_google_results(query, lang="en"):
     
     pages = []
     for item in response.json()["items"]:
+        #print(item["description"])
+        print(item)
         pages.append(Page(item["title"], item["link"]))
     
     return pages

@@ -10,7 +10,7 @@ from sumy.nlp.stemmers import Stemmer
 from sumy.utils import get_stop_words
     
 def summarize_website(url, lang="en"):
-    
+    print("in summarize_website")
     if lang == "en":
         LANGUAGE = "english"
     elif lang == "de":
@@ -34,7 +34,7 @@ def summarize_website(url, lang="en"):
     text = ""
     for sentence in summary:
         text += str(sentence)
-
+    return text
 
 def summarize_text(text, lang="en"):
     
@@ -60,6 +60,6 @@ def summarize_text(text, lang="en"):
     text = ""
     for sentence in summary:
         text += str(sentence)
-
+    return text
  
 #print(summarize(url="https://de.wikipedia.org/wiki/Mainzer_Republik", lang="de"))

@@ -8,7 +8,7 @@ openai.api_key = json.load(open("authentication/openai/openai_key.json"))["api_k
 
 #Initialize chat conversation
 conversation = Conversation()
-conversation.messages = [ChatMessage("system", "The current date is: 15. June. The year is 2023. If you require real time information, fallback to the realtime_websearch function. This can be used multiple times throughout the conversation.")]
+conversation.messages = [ChatMessage("system", "The current date is: 15. June. The year is 2023. If you require real time information on a topic that could have changed since your training stoped, fallback to the realtime_websearch function. This can be used multiple times throughout the conversation.")]
 
 while True:
 	message = input("User: ")
@@ -32,7 +32,7 @@ while True:
 				messages=conversation.convertToOpenAI(),
 				functions= functions.openai_function_documentation,
 				function_call="auto",
-			)
+		)
 		
 		conversation.messages.append(ChatMessage("user", response["choices"][0]["message"]["content"]))
 		print(response["choices"][0]["message"]["content"])

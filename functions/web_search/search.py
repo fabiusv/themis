@@ -13,10 +13,15 @@ def performSearch(arguments, lang="en"):
     if snippet:
         return "Real-time websearch response:\n" + snippet
     else:
+        print("Fetching pages")
         pages = PageTextAPI.fetch_google_results(input_query, lang)#FIXME: Page Fetcher is not working
-        #print(pages)
+        print(pages[0])
+        
         for page in pages[0:3]:
-            return web_formatter.format_website(summary.summarize_website(page.url, lang), input_query, lang)
+            #print(summary.summarize_website(page.url, lang))
+            return summary.summarize_website(page.url, lang)
+            #quit()
+            #return web_formatter.format_website(, input_query, lang)
             
             
             #return summary.summarize_website(page.url, lang)
