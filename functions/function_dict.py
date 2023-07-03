@@ -1,6 +1,10 @@
 from .web_search.search import performSearch
+from .time.time import get_time
+import datetime
 function_dict = {
     "realtime_websearch": performSearch,
+    "get_time": get_time,
+    
 }
 
 openai_function_documentation = [
@@ -22,7 +26,7 @@ openai_function_documentation = [
 				}, 
                 #Weather
                 {
-                    "name": "weather",
+                    "name": "get_weather",
                     "description": "Get the weather for a location",
                     "parameters": {
                         "type": "object",
@@ -31,6 +35,10 @@ openai_function_documentation = [
                                 "type": "string",
                                 "description": "The location to get the weather for",
                             },
+                            "time": {
+                                "type": "string",
+                                "description": "The ISO formatted date to get the weather for. The current ISO date is: " + str(datetime.datetime.now()),
+                            },
                         },
                         "required": ["location"],
                     },
@@ -38,7 +46,7 @@ openai_function_documentation = [
                 
                 #Time
                 {
-                    "name": "time",
+                    "name": "get_time",
                     "description": "Get the current time, only if the user specifically asks for it",
                     "parameters": {
                         "type": "object",
