@@ -3,6 +3,14 @@ from .helpers import web_formatter
 from tools import summary
 import requests
 from tools import summary
+import requests
+from bs4 import BeautifulSoup
+
+def get_website_text(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    return soup.get_text()
+
 #TODO: Implement yielding of results
 
 def performSearch(arguments, lang="en"):
@@ -11,6 +19,7 @@ def performSearch(arguments, lang="en"):
     snippet = SnippetFetcher.searchSnippet(input_query, lang)
 
     if snippet:
+        
         return "Real-time websearch response:\n" + snippet
     else:
         print("Fetching pages")
@@ -18,6 +27,7 @@ def performSearch(arguments, lang="en"):
         print(pages[0])
         
         for page in pages[0:3]:
+            return get_website_text(page.url)
             #print(summary.summarize_website(page.url, lang))
             return summary.summarize_website(page.url, lang)
             #quit()
@@ -25,4 +35,5 @@ def performSearch(arguments, lang="en"):
             
             
             #return summary.summarize_website(page.url, lang)
+            
             
