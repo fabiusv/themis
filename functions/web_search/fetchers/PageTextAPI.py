@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import json
-
+ 
 
 
 class Page():
@@ -10,6 +10,7 @@ class Page():
         self.title = title
         self.text = text
         self.url = url
+    
     
 
 def fetch_google_results(query, lang="en"):
@@ -21,7 +22,7 @@ def fetch_google_results(query, lang="en"):
     if lang == "en":
         cx = "c4415157c33794318"
         #print("English")
-    elif lang == "de":
+    else:
         cx = "6597a0405f56c4d3e"
         #print("Deutsch")
 
@@ -32,11 +33,8 @@ def fetch_google_results(query, lang="en"):
     }
     headers = {'Accept': 'application/json'}
     response = requests.get(url, params=params, headers=headers)
-    
     pages = []
     for item in response.json()["items"]:
-        #print(item["description"])
-        print(item)
         pages.append(Page(item["title"], item["link"]))
     
     return pages
