@@ -23,10 +23,11 @@ while True: #FIXME: Handle openai.error.RateLimitError
 	if response["choices"][0]["message"].get("function_call"):
 		arguments = json.loads(response["choices"][0]["message"]["function_call"]["arguments"])
 		name = response["choices"][0]["message"]["function_call"]["name"]
+
+
 		function_response = functions.function_dict[name](arguments)
 		print("reponse")
-		print(function_response)
-
+		
 		conversation.messages.append(ChatMessage("user", function_response, True)) #TODO: Change system to user if required
 		
 		response = openai.ChatCompletion.create(
