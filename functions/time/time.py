@@ -4,7 +4,32 @@ from dateutil.relativedelta import relativedelta
 import time
 from geopy.geocoders import Nominatim
 from tzwhere import tzwhere
+import parsedatetime as pdt # $ pip install parsedatetime
 
+
+def nlp_time_parser(date_string):
+    cal = pdt.Calendar()
+    # now in utc
+    now = datetime.datetime.now() 
+    print(now)
+    result = cal.parseDT(date_string, now)[0] #TODO: implement translation to english
+    print(result)
+    formatted_time = result.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    formatted_time += 'Z'
+    return formatted_time
+
+    
+def get_ISO_8601_formatted_datetime(location) -> str:
+    if not location: #TODO: Or location is in germany
+        now = datetime.datetime.now()
+        formatted_datetime = now.strftime("%Y-%m-%dT%H:%M:%S.%f")
+        formatted_datetime += 'Z'
+    else:
+        timezone_name = get_timezone(location)
+        timezone = pytz.timezone(timezone_name)
+        now = datetime.datetime.now(timezone)
+        formatted_datetime = now.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    return formatted_datetime
 
 
 def get_timezone(parameters):

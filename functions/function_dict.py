@@ -69,13 +69,18 @@ openai_function_documentation = [
                         "type": "object",
                         "properties": {
                             "origin": {
-                                "type": "string",
+                                "type": "string", 
                                 "description": "The origin location",
                             },
                             "destination": {
                                 "type": "string",
                                 "description": "The destination location",
+                            },
+                            "departure_time": {
+                                "type": "string",
+                                "description": "The natural languge time specified by the user to use for the route search",
                             }
+
                         },
                        "required": ["destination"],
                     },

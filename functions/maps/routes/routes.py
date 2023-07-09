@@ -1,7 +1,10 @@
 import requests
 import datetime
+from ...time.time import get_ISO_8601_formatted_datetime, nlp_time_parser
 
-def fetch_routes(start_location, end_location, travel_mode, departure_time):
+
+
+def fetch_routes(start_location, end_location, travel_mode, departure_time=None):
   headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': 'AIzaSyCAElPq9PZ7LffK77cxj_Aa5AryJT0r-Ko',
@@ -17,9 +20,9 @@ def fetch_routes(start_location, end_location, travel_mode, departure_time):
           
           
       },
-      'travelMode': 'TRANSIT',#TODO: Use user input
+      'travelMode': travel_mode,
       #'routingPreference': 'TRAFFIC_AWARE',
-      'departureTime': '2023-10-15T15:01:23.045123456Z', #TODO: change to current time
+      'departureTime': departure_time or "",
       'computeAlternativeRoutes': False,
       'routeModifiers': {
           'avoidTolls': False,
@@ -31,14 +34,17 @@ def fetch_routes(start_location, end_location, travel_mode, departure_time):
   }
 
   response = requests.post('https://routes.googleapis.com/directions/v2:computeRoutes', headers=headers, json=json_data)
+  print("Response: #############")
+
   print(response.json())
+  
+  print("#############")
   return response.json()["routes"][0]
 
 class Section:
     def __init__(self, travel_mode, instructions, start_index, stop_index, all_steps) -> None:
         
         self.steps = all_steps[start_index:stop_index + 1]
-        print(self.steps)
         self.travel_mode = travel_mode
         self.navigation_instruction = instructions
     def get_travel_time(self):
@@ -52,7 +58,6 @@ class Section:
 def generate_sections(steps, segments):
   sections = []
   for segment in segments:
-      print(segment)
       try:
         section = Section(segment["travelMode"], segment["navigationInstruction"]["instructions"], segment["stepStartIndex"], segment["stepEndIndex"], steps)
       except:
@@ -81,22 +86,25 @@ def get_formatted_sections(sections):
 
 
 
-def public_transport_route_fetching_handler(arguments, lang="en"):#FIXME: Implement parameters<
-
-  start_location = arguments["origin"]
+def public_transport_route_fetching_handler(arguments, lang="en"):
+  format_order = "Format this information in a flowing text that can be read out by a virtual assistant:\n"
+  start_location = arguments.get("origin") or "Wachenheim" #TODO: Use current user supplied location
   print(start_location)
   end_location = arguments["destination"]
   print(end_location)
+  
+  departure_time = nlp_time_parser(arguments.get("departure_time"))
+  print(departure_time)
   #current date string:
   datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-  route = fetch_routes(start_location, end_location, "TRANSIT", "2023-10-15T15:01:23.045123456Z")
+  route = fetch_routes(start_location, end_location, "TRANSIT", departure_time)
   duration_text = route["localizedValues"]["duration"]["text"]
   distance_text = route["localizedValues"]["distance"]["text"]
   steps = route["legs"][0]["steps"]
   segments = route["legs"][0]["stepsOverview"]["multiModalSegments"]
   sections = generate_sections(steps, segments)
   formatted_sections = get_formatted_sections(sections)
-  formatted_route = "Die Route dauert " + duration_text + " und ist " + distance_text + " lang. \n" + "Sie besteht aus den folgenden Abschnitten:\n" + formatted_sections
+  formatted_route = format_order +  "Die Route dauert " + duration_text + " und ist " + distance_text + " lang. \n" + "Sie besteht aus den folgenden Abschnitten:\n" + formatted_sections
   return formatted_route
 
 
