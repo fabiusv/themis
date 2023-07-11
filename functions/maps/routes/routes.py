@@ -1,7 +1,9 @@
 import requests
 import datetime
 from ...time.time import get_ISO_8601_formatted_datetime, nlp_time_parser_utc
+import json
 
+localization = json.load(open("localization/active.json"))
 
 
 def fetch_routes(start_location, end_location, travel_mode, departure_time=None, arrival_time=None):
@@ -29,7 +31,7 @@ def fetch_routes(start_location, end_location, travel_mode, departure_time=None,
           'avoidHighways': False,
           'avoidFerries': False,
       },
-      'languageCode': 'de-DE',
+      'languageCode': localization["language_identifiers"]["full"],
       'units': 'METRIC',
   }
 
@@ -73,7 +75,7 @@ def get_formatted_sections(sections):
       
       #      temp = "Der " + str(counter) + ". Abschnitt hat die Reisemethode: " + section.travel_mode + " und die Anweisung: "  + section.navigation_instruction
       if section.steps[0]["travelMode"] == "TRANSIT":
-        temp = str(counter) +". "+ section.navigation_instruction + ". Abfahrt um: " + section.steps[0]["transitDetails"]["localizedValues"]["departureTime"]["time"]["text"]  + ". Dauer: " + str(section.get_travel_time()//60) + " Minuten. "
+        temp = str(counter) +". "+ section.navigation_instruction + ". " + localization["functions"]["maps"]["section"]["departure"] + section.steps[0]["transitDetails"]["localizedValues"]["departureTime"]["time"]["text"]  + ". "+ localization["functions"]["maps"]["section"]["duration"] + str(section.get_travel_time()//60) + " Minuten. "
         print(temp)
       else:
         temp = str(counter) +". "+ section.travel_mode + section.navigation_instruction + ". Dauer: " + str(section.get_travel_time()//60) 
@@ -85,7 +87,7 @@ def get_formatted_sections(sections):
 
 
 def public_transport_route_fetching_handler(arguments, lang="en"):
-  format_order = "Format this information in a flowing text that can be read out by a virtual assistant:\n"
+  format_order = localization["functions"]["maps"]["section"]["departure"] + "\n"
   start_location = arguments.get("origin") or "Wachenheim" #TODO: Use current user supplied location
   print(start_location)
   end_location = arguments["destination"]
@@ -103,12 +105,12 @@ def public_transport_route_fetching_handler(arguments, lang="en"):
   #datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
   route = fetch_routes(start_location, end_location, "TRANSIT", departure_time, arrival_time)
   duration_text = route["localizedValues"]["duration"]["text"]
-  distance_text = route["localizedValues"]["distance"]["text"]
+  distance_text = route["localizedValues"]["distance"]["text"] #Only use in WALK AND DRIVE
   steps = route["legs"][0]["steps"]
   segments = route["legs"][0]["stepsOverview"]["multiModalSegments"]
   sections = generate_sections(steps, segments)
   formatted_sections = get_formatted_sections(sections)
-  formatted_route = format_order +  "Die Route dauert " + duration_text + " und ist " + distance_text + " lang. \n" + "Sie besteht aus den folgenden Abschnitten:\n" + formatted_sections
+  formatted_route = format_order +  localization["functions"]["maps"]["route"]["total_duration"] + duration_text + localization["functions"]["maps"]["section"]["departure"] + formatted_sections
   return formatted_route
 
 
