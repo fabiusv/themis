@@ -1,10 +1,10 @@
 import requests
 import datetime
-from ...time.time import get_ISO_8601_formatted_datetime, nlp_time_parser
+from ...time.time import get_ISO_8601_formatted_datetime, nlp_time_parser_utc
 
 
 
-def fetch_routes(start_location, end_location, travel_mode, departure_time=None):
+def fetch_routes(start_location, end_location, travel_mode, departure_time=None, arrival_time=None):
   headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': 'AIzaSyCAElPq9PZ7LffK77cxj_Aa5AryJT0r-Ko',
@@ -18,11 +18,11 @@ def fetch_routes(start_location, end_location, travel_mode, departure_time=None)
       'destination': {
           "address": end_location,
           
-          
       },
       'travelMode': travel_mode,
       #'routingPreference': 'TRAFFIC_AWARE',
-      'departureTime': departure_time or "",
+      'departureTime': departure_time, #defaults to current time
+      'arrivalTime': arrival_time,
       'computeAlternativeRoutes': False,
       'routeModifiers': {
           'avoidTolls': False,
@@ -34,11 +34,7 @@ def fetch_routes(start_location, end_location, travel_mode, departure_time=None)
   }
 
   response = requests.post('https://routes.googleapis.com/directions/v2:computeRoutes', headers=headers, json=json_data)
-  print("Response: #############")
 
-  print(response.json())
-  
-  print("#############")
   return response.json()["routes"][0]
 
 class Section:
@@ -72,11 +68,13 @@ def generate_sections(steps, segments):
 def get_formatted_sections(sections):
   counter = 1
   final_string = ""
+  print("Temporary Sections:")
   for section in sections:
       
       #      temp = "Der " + str(counter) + ". Abschnitt hat die Reisemethode: " + section.travel_mode + " und die Anweisung: "  + section.navigation_instruction
       if section.steps[0]["travelMode"] == "TRANSIT":
         temp = str(counter) +". "+ section.navigation_instruction + ". Abfahrt um: " + section.steps[0]["transitDetails"]["localizedValues"]["departureTime"]["time"]["text"]  + ". Dauer: " + str(section.get_travel_time()//60) + " Minuten. "
+        print(temp)
       else:
         temp = str(counter) +". "+ section.travel_mode + section.navigation_instruction + ". Dauer: " + str(section.get_travel_time()//60) 
       counter += 1
@@ -93,11 +91,17 @@ def public_transport_route_fetching_handler(arguments, lang="en"):
   end_location = arguments["destination"]
   print(end_location)
   
-  departure_time = nlp_time_parser(arguments.get("departure_time"))
+  departure_time = nlp_time_parser_utc(arguments.get("en_departure_time"))
+  arrival_time = nlp_time_parser_utc(arguments.get(arguments.get("en_arrival_time")))
+
+  #Make sure only one of the two is set
+  if arrival_time:
+     departure_time = None
+  
   print(departure_time)
   #current date string:
-  datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-  route = fetch_routes(start_location, end_location, "TRANSIT", departure_time)
+  #datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+  route = fetch_routes(start_location, end_location, "TRANSIT", departure_time, arrival_time)
   duration_text = route["localizedValues"]["duration"]["text"]
   distance_text = route["localizedValues"]["distance"]["text"]
   steps = route["legs"][0]["steps"]

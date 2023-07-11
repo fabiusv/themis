@@ -76,9 +76,13 @@ openai_function_documentation = [
                                 "type": "string",
                                 "description": "The destination location",
                             },
-                            "departure_time": {
+                            "en_departure_time": {
                                 "type": "string",
-                                "description": "The natural languge time specified by the user to use for the route search",
+                                "description": "The string date expression of the departure time. Allways translate to english",
+                            },
+                            "en_arrival_time": {
+                                "type": "string",
+                                "description": "The string date expression of the wished arrival time. Allways translate to english",
                             }
 
                         },
