@@ -7,16 +7,22 @@ from tzwhere import tzwhere
 import parsedatetime as pdt # $ pip install parsedatetime
 
 
-def nlp_time_parser(date_string):
-    cal = pdt.Calendar()
-    # now in utc
-    now = datetime.datetime.now() 
-    print(now)
-    result = cal.parseDT(date_string, now)[0] #TODO: implement translation to english
-    print(result)
-    formatted_time = result.strftime("%Y-%m-%dT%H:%M:%S.%f")
-    formatted_time += 'Z'
-    return formatted_time
+def nlp_time_parser_utc(date_string):
+    print(date_string)
+    try:
+        cal = pdt.Calendar()
+        # now in utc
+        now = datetime.datetime.now()
+        print(now)
+        result = cal.parseDT(date_string, now)[0] #TODO: implement translation to english
+        #result to utc
+        result = result.astimezone(pytz.utc)
+        print(result)
+        formatted_time = result.strftime("%Y-%m-%dT%H:%M:%S.%f")
+        formatted_time += 'Z'
+        return formatted_time
+    except:
+        return None
 
     
 def get_ISO_8601_formatted_datetime(location) -> str:
