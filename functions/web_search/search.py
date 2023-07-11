@@ -1,8 +1,8 @@
 from .fetchers import PageTextAPI, SnippetFetcher
 from .helpers import web_formatter
-from tools import summary
+from functions import summary
 import requests
-from tools import summary
+from functions import summary
 import requests
 from bs4 import BeautifulSoup
 
@@ -11,7 +11,6 @@ def get_website_text(url):
     soup = BeautifulSoup(response.content, 'html.parser')
     return soup.get_text()
 
-#TODO: Implement yielding of results
 
 def performSearch(arguments, lang="en"):
     input_query = arguments["searchquery"]
@@ -33,7 +32,4 @@ def performSearch(arguments, lang="en"):
             #quit()
             #return web_formatter.format_website(, input_query, lang)
             
-            
             #return summary.summarize_website(page.url, lang)
-            
-            
