@@ -5,10 +5,12 @@ from ChatClass import ChatMessage, Conversation
 
 #initialize openai api
 openai.api_key = json.load(open("authentication/openai/openai_key.json"))["api_key"]
+localization = json.load(open("localization/active"))
+
 
 #Initialize chat conversation
 conversation = Conversation()
-conversation.messages = [ChatMessage("system", "The current date is: 15. June. The year is 2023. Perform a web-search on time sensitive topics that could have changed or you just dont know. Always perform a search, before claiming you dont know the answer.,")]
+conversation.messages = [ChatMessage("system", localization["default_conversation"])]
 
 while True: #FIXME: Handle openai.error.RateLimitError 
 	message = input("User: ")
