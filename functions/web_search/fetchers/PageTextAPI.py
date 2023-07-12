@@ -4,6 +4,7 @@ import os
 import json
  
 
+localization = json.load(open("localization/active.json"))
 
 class Page():
     def __init__(self, title, url, text=""):
@@ -19,7 +20,7 @@ def fetch_google_results(query, lang="en"):
     key = json.load(open("authentication/gcloud/client_api_key.json"))["api_key"]
     url = 'https://customsearch.googleapis.com/customsearch/v1'
     
-    if lang == "en":
+    if localization["language_identifiers"]["short"] == "en":
         cx = "c4415157c33794318"
         #print("English")
     else:

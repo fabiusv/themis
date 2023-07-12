@@ -5,6 +5,9 @@ import requests
 from functions import summary
 import requests
 from bs4 import BeautifulSoup
+import json
+
+localization = json.load(open("localization/active.json"))
 
 def get_website_text(url):
     response = requests.get(url)
@@ -12,17 +15,17 @@ def get_website_text(url):
     return soup.get_text()
 
 
-def performSearch(arguments, lang="en"):
+def performSearch(arguments):
     input_query = arguments["searchquery"]
     print(input_query)
-    snippet = SnippetFetcher.searchSnippet(input_query, lang)
+    snippet = SnippetFetcher.searchSnippet(input_query)
 
     if snippet:
         
-        return "Real-time websearch response:\n" + snippet
+        return localization["functions"]["search"]["snippet_instruction"] + snippet
     else:
         print("Fetching pages")
-        pages = PageTextAPI.fetch_google_results(input_query, lang)#FIXME: Page Fetcher is not working
+        pages = PageTextAPI.fetch_google_results(input_query) #FIXME: Page Fetcher is not working
         print(pages[0])
         
         for page in pages[0:3]:
