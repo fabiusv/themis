@@ -12,7 +12,6 @@ def fetch_routes(start_location, end_location, travel_mode, departure_time=None,
       'X-Goog-Api-Key': 'AIzaSyCAElPq9PZ7LffK77cxj_Aa5AryJT0r-Ko',
       'X-Goog-FieldMask': '*',
   }
-
   json_data = {
       'origin': {
           "address": start_location,
@@ -34,11 +33,17 @@ def fetch_routes(start_location, end_location, travel_mode, departure_time=None,
       'languageCode': localization["language_identifiers"]["full"],
       'units': 'METRIC',
   }
-
+  print(json_data)
   response = requests.post('https://routes.googleapis.com/directions/v2:computeRoutes', headers=headers, json=json_data)
-
-  return response.json()["routes"][0]
-
+  print(response.status_code)
+  if response.status_code == 200:
+    
+    return response.json()["routes"][0]
+  elif response.status_code == 404:
+      print(response.json())
+      raise Exception("Location not found")
+  else:
+     print(response.json())
 class Section:
     def __init__(self, travel_mode, instructions, start_index, stop_index, all_steps) -> None:
         
@@ -75,7 +80,7 @@ def get_formatted_sections(sections):
       
       #      temp = "Der " + str(counter) + ". Abschnitt hat die Reisemethode: " + section.travel_mode + " und die Anweisung: "  + section.navigation_instruction
       if section.steps[0]["travelMode"] == "TRANSIT":
-        temp = str(counter) +". "+ section.navigation_instruction + ". " + localization["functions"]["maps"]["section"]["departure"] + section.steps[0]["transitDetails"]["localizedValues"]["departureTime"]["time"]["text"]  + ". "+ localization["functions"]["maps"]["section"]["duration"] + str(section.get_travel_time()//60) + " Minuten. "
+        temp = str(counter) +". "+ section.navigation_instruction + ". " + localization["functions"]["maps"]["sections"]["departure"] + section.steps[0]["transitDetails"]["localizedValues"]["departureTime"]["time"]["text"]  + ". "+ localization["functions"]["maps"]["sections"]["duration"] + str(section.get_travel_time()//60) + " Minuten. "
         print(temp)
       else:
         temp = str(counter) +". "+ section.travel_mode + section.navigation_instruction + ". Dauer: " + str(section.get_travel_time()//60) 
@@ -87,7 +92,7 @@ def get_formatted_sections(sections):
 
 
 def public_transport_route_fetching_handler(arguments, lang="en"):
-  format_order = localization["functions"]["maps"]["section"]["departure"] + "\n"
+  format_order = localization["functions"]["maps"]["sections"]["departure"] + "\n"
   start_location = arguments.get("origin") or "Wachenheim" #TODO: Use current user supplied location
   print(start_location)
   end_location = arguments["destination"]
@@ -110,7 +115,7 @@ def public_transport_route_fetching_handler(arguments, lang="en"):
   segments = route["legs"][0]["stepsOverview"]["multiModalSegments"]
   sections = generate_sections(steps, segments)
   formatted_sections = get_formatted_sections(sections)
-  formatted_route = format_order +  localization["functions"]["maps"]["route"]["total_duration"] + duration_text + localization["functions"]["maps"]["section"]["departure"] + formatted_sections
+  formatted_route = format_order +  localization["functions"]["maps"]["route"]["total_duration"] + duration_text + localization["functions"]["maps"]["sections"]["departure"] + formatted_sections
   return formatted_route
 
 
