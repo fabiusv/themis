@@ -6,7 +6,7 @@ from .maps.routes.routes import public_transport_route_fetching_handler
 function_dict = {
     "realtime_websearch": performSearch,
     "get_time": get_time,
-    "public_transport_route" : public_transport_route_fetching_handler,
+    "public_transport_information" : public_transport_route_fetching_handler,
     
 }
 
@@ -63,7 +63,7 @@ openai_function_documentation = [
                     },
                 },
                 {
-                    "name": "public_transport_route",
+                    "name": "public_transport_information",
                     "description": "Get the next train from A to B, including the time it takes to walk to the station",
                     "parameters": {
                         "type": "object",
