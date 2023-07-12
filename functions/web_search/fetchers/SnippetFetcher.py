@@ -1,15 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import json
 
-def searchSnippet(term, lang="en"):
-    #print("snippet fetcher started for term: " + term)
-    def formatSnippet(string):
+localization = json.load(open("localization/active.json"))
+
+
+
+def formatSnippet(string):
         fixed_string = re.sub(r'([a-z])([A-Z])', r'\1 \2', string)
-        fixed_string = fixed_string.replace("Wähle aus, wozu du Feedback geben möchtest Du kannst auch allgemeines Feedback geben Feedback geben", "")
         fixed_string = re.sub(r'(\D)(\d)', r'\1 \2', fixed_string)
-        fixed_string = fixed_string.replace("Feedback geben", "")
-        fixed_string = fixed_string.replace("Hervorgehobenes Snippet aus dem Web", "")
+
+        #Get strings that dont add any value and remove them
+        for stripping_instruction in localization["functions"]["search"]["snippet_formatting"]["stripped_strings"]:
+            fixed_string = fixed_string.replace(stripping_instruction, "")
 
         try:
             fixed_string = fixed_string.split("https")[0]
@@ -29,7 +33,10 @@ def searchSnippet(term, lang="en"):
         #print("formatted snippet: " + fixed_string)
         return fixed_string
 
-    def formatURL(searchterm, lang="en"):
+def formatURL(searchterm):
+
+        lang = localization["language_identifiers"]["short"]
+
         inquiry = ""
         
         if inquiry == "":
@@ -55,6 +62,9 @@ def searchSnippet(term, lang="en"):
 
         return url
 
+def searchSnippet(term):
+    lang = localization["language_identifiers"]["short"]
+
     if lang == "en":
         accept_lang = "en-US,en;q=0.5"
     elif lang == "de":
@@ -72,7 +82,7 @@ def searchSnippet(term, lang="en"):
         "TE": "Trailers",
     }
 
-    url = formatURL(term, lang)
+    url = formatURL(term)
 
     response = requests.get(url, headers=headers)
 
@@ -80,7 +90,7 @@ def searchSnippet(term, lang="en"):
     
     #save html file
     #with open("test.html", "w") as file:
-     #   file.write(str(soup))
+    #   file.write(str(soup))
 
     # Find the deepest class that contains the text "Hervorgehobenes Snippet aus dem Web"
     target_class = None
@@ -90,7 +100,7 @@ def searchSnippet(term, lang="en"):
         if div.get("class"):
             this_class = div.get("class")
 
-        if "Feedback geben" in div.text or "Z0LcW t2b5Cf" in this_class:
+        if localization["functions"]["search"]["snippet_target_identifiers"]["snippet_locator_string"] in div.text or "Z0LcW t2b5Cf" in this_class:
             class_list = div.get("class")
             if class_list:
                 class_levels = len(class_list)
@@ -102,9 +112,9 @@ def searchSnippet(term, lang="en"):
         target_element = soup.find("div", {"class": target_class})
         target_text = target_element.text.strip()
         #print(target_text)
-        target_text = target_text.split("Wird auch oft gesucht")[0]
-        target_text = target_text.split("Andere suchten auch nach")[0]
-        if target_text == "Feedback geben" or target_text == "Informationen zu hervorgehobenen Snippets•Feedback geben" or "Laut deiner IP-Adresse" in target_text:
+        target_text = target_text.split(localization["functions"]["search"]["snippet_target_identifiers"]["start"])[0]
+        target_text = target_text.split(localization["functions"]["search"]["snippet_target_identifiers"]["stop"])[0]
+        if target_text in localization["functions"]["search"]["snippet_target_identifiers"]["not_found_strings"] or localization["functions"]["search"]["snippet_target_identifiers"]["ip_message"] in target_text:
             print("Could not find a snippet")
             return None
         #print("unformatted snippet: " + target_text)
