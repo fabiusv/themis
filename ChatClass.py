@@ -17,6 +17,7 @@ class Conversation:
 					tempChatHistory.append({"role": message.role, "content": message.content})
 			else:
 				tempChatHistory.append({"role": message.role, "content": message.content})
+		
 		if self.messages[-1].is_insert:
 			tempChatHistory.append({"role": self.messages[-1].role, "content": self.messages[-1].content})
 		print("Last message: ")
