@@ -3,7 +3,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 import time
 from geopy.geocoders import Nominatim
-from tzwhere import tzwhere
+from timezonefinder import TimezoneFinder
 import parsedatetime as pdt # $ pip install parsedatetime
 
 
@@ -40,25 +40,35 @@ def get_ISO_8601_formatted_datetime(location) -> str:
 
 def get_timezone(parameters):
     
-    timezone_finder = tzwhere.tzwhere()
+    timezone_finder = TimezoneFinder()
 
     geolocator = Nominatim(user_agent="edith_country")
     location = geolocator.geocode(parameters)
-    timezone = str(timezone_finder.tzNameAt(location.latitude, location.longitude))
+    timezone = str(timezone_finder.timezone_at(lat=location.latitude, lng=location.longitude))
     return timezone
 
-def get_time(parameters):
+def get_time(meta_data, parameters):
     print(parameters)
     if parameters.get("location"):
         place = parameters["location"]
+        timezone_name = get_timezone(place)
+        timezone = pytz.timezone(timezone_name)
     else:
-        now = datetime.datetime.now()
-        return "Use this to respond to the question: " + now.strftime("%H:%M")
-    timezone_name = get_timezone(place)
-    timezone = pytz.timezone(timezone_name)
+        
+        if meta_data.timezone:
+            timezone_name = meta_data.timezone
+            timezone = pytz.timezone(timezone_name)
+        elif meta_data.location:
+
+            timezone_name = get_timezone(TimezoneFinder.timezone_at(lat=meta_data.location.latitude, lng=meta_data.location.longitude))
+            timezone = pytz.timezone(timezone_name)
+        else:
+            now = datetime.datetime.now()
+            return "Use this to respond to the question: " + now.strftime("%H:%M")  
+        
     now = datetime.datetime.now(timezone)
     current_time = now.strftime("%H:%M")
-    return  "Use this to respond to the question: " + current_time
+    return  "The current time there is: " + current_time
 
 
 def calculate_delta(parameters):

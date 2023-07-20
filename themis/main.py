@@ -5,7 +5,7 @@ from .functions.maps.routes.routes import public_transport_route_fetching_handle
 
 from .Dataclasses import *
 
-from .ChatWrapper import OpenAIChat
+from .OpenAPICharWrapper import OpenAIChat
 from .localization.localizer import get_localization
 
 class ThemisHandler():

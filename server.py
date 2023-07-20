@@ -10,6 +10,8 @@ import uuid
 from DatabaseHandlers.ContextDBHandler import ContextDatabaseManager
 from DatabaseHandlers.UserDBHandler import UserDatabaseManager
 
+import APIDatamodels
+
 import themis
 
 app = FastAPI()
@@ -24,38 +26,6 @@ def validate(user_id: str, api_key):
     if user.api_key != api_key:
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return True
-
-class RegistrationResponse(BaseModel):
-    user_id: str
-    api_key: str
-
-
-class ChatResponseRequest(BaseModel):
-
-    user_id: str
-    context_id: str | None = None
-
-    message: str
-
-    location: themis.Location | None = None
-    timezone: str | None = None
-    language: str | None = None
-
-
-class FunctionCalling(BaseModel):
-    function_name: str
-    parameters: str
-
-class CompletionResponse(BaseModel):
-    completion: str
-    context_id: str
-
-    
-
-class RegisterRequest(BaseModel):
-    username: str
-    password_hash: str
-    email: str
     
 
 
@@ -65,7 +35,8 @@ async def read_root():
 
 
 @app.post("/complete_chat/user/{user_id}/key/{api_key}")
-async def complete(user_id:str, api_key: str, chatResponse: ChatResponseRequest):
+
+async def complete(user_id:str, api_key: str, chatResponse: APIDatamodels.ChatResponseRequest):
     if validate(user_id, api_key):
         context_manager = ContextDatabaseManager()
         
@@ -111,7 +82,7 @@ async def complete(user_id:str, api_key: str, chatResponse: ChatResponseRequest)
 
 
 @app.get("/function_calling/user/{user_id}/key/{api_key}")
-async def function_calling(user_id: str, api_key: str, function_calling_object: FunctionCalling):
+async def function_calling(user_id: str, api_key: str, function_calling_object: APIDatamodels.FunctionCallingRequest):
     if validate(user_id, api_key):
         #call function
         return {"success": True}
@@ -121,7 +92,7 @@ async def function_calling(user_id: str, api_key: str, function_calling_object: 
 
 
 @app.post("/register")
-async def register(user: RegisterRequest):
+async def register(user: APIDatamodels.RegisterRequest):
 
     user_manager = UserDatabaseManager()
     if user_manager.find_by_email(user.email) is not None:
@@ -134,12 +105,12 @@ async def register(user: RegisterRequest):
 
     user_manager.insert(temp_user)
 
-    return RegistrationResponse(user_id=temp_user.user_id, api_key=temp_user.api_key)
+    return APIDatamodels.RegistrationResponse(user_id=temp_user.user_id, api_key=temp_user.api_key)
 
 
 
 @app.post("/get_api_key")
-async def get_api_key(user: RegisterRequest):
+async def get_api_key(user: APIDatamodels.RegisterRequest):
     #return api key if correct
     if validate(user.username, user.password_hash):
         user_manager = UserDatabaseManager()

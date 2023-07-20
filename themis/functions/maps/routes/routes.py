@@ -4,7 +4,7 @@ from ...time.time import get_ISO_8601_formatted_datetime, nlp_time_parser_utc
 import json
 from ..places.places import fetch_places_json
 from ....localization.localizer import get_localization
-
+from ....authentication.Authenticator import Authenticator
 
 
 def fetch_routes(meta_data, start_location, end_location, travel_mode, departure_time=None, arrival_time=None):
@@ -13,7 +13,7 @@ def fetch_routes(meta_data, start_location, end_location, travel_mode, departure
 
   print(start_location)
   print(end_location)
-  key = json.load(open("authentication/maps_platform/maps_platform_key.json"))["api_key"]
+  key = Authenticator.get_google_cloud_key()
 
   headers = {
       'Content-Type': 'application/json',
@@ -156,13 +156,13 @@ def public_transport_route_fetching_handler(meta_data, arguments, lang="en"):
   print(departure_time)
   #current date string:
   #datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-  route = fetch_routes(start_location, end_location, "TRANSIT", departure_time, arrival_time)
+  route = fetch_routes(meta_data, start_location, end_location, "TRANSIT", departure_time, arrival_time)
   duration_text = route["localizedValues"]["duration"]["text"]
   distance_text = route["localizedValues"]["distance"]["text"] #Only use in WALK AND DRIVE
   steps = route["legs"][0]["steps"]
   segments = route["legs"][0]["stepsOverview"]["multiModalSegments"]
   sections = generate_sections(steps, segments)
-  formatted_sections = get_formatted_sections(sections)
+  formatted_sections = get_formatted_sections(meta_data, sections)
   formatted_route = format_order +  localization["functions"]["maps"]["route"]["total_duration"] + duration_text + localization["functions"]["maps"]["sections"]["departure"] + formatted_sections
   return formatted_route
 
