@@ -14,7 +14,7 @@ def nlp_time_parser_utc(date_string):
         # now in utc
         now = datetime.datetime.now()
         print(now)
-        result = cal.parseDT(date_string, now)[0] #TODO: implement translation to english
+        result = cal.parseDT(date_string, now)[0] 
         #result to utc
         result = result.astimezone(pytz.utc)
         print(result)

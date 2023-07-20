@@ -2,14 +2,22 @@ import requests
 import datetime
 from ...time.time import get_ISO_8601_formatted_datetime, nlp_time_parser_utc
 import json
+from ..places.places import fetch_places_json
+from ....localization.localizer import get_localization
 
-localization = json.load(open("localization/active.json"))
 
 
-def fetch_routes(start_location, end_location, travel_mode, departure_time=None, arrival_time=None):
+def fetch_routes(meta_data, start_location, end_location, travel_mode, departure_time=None, arrival_time=None):
+  localization = get_localization(meta_data.language)
+
+
+  print(start_location)
+  print(end_location)
+  key = json.load(open("authentication/maps_platform/maps_platform_key.json"))["api_key"]
+
   headers = {
       'Content-Type': 'application/json',
-      'X-Goog-Api-Key': 'AIzaSyCAElPq9PZ7LffK77cxj_Aa5AryJT0r-Ko',
+      'X-Goog-Api-Key': key,
       'X-Goog-FieldMask': '*',
   }
   json_data = {
@@ -33,15 +41,53 @@ def fetch_routes(start_location, end_location, travel_mode, departure_time=None,
       'languageCode': localization["language_identifiers"]["full"],
       'units': 'METRIC',
   }
-  print(json_data)
+
   response = requests.post('https://routes.googleapis.com/directions/v2:computeRoutes', headers=headers, json=json_data)
-  print(response.status_code)
   if response.status_code == 200:
     
     return response.json()["routes"][0]
   elif response.status_code == 404:
+      
+      start_location = fetch_places_json(start_location)
+      print(start_location)
+      end_location = fetch_places_json(end_location)
+      print(end_location)
+
+      if start_location and end_location:
+        start_location = start_location["candidates"][0]["plus_code"]["global_code"]
+        print(start_location)
+        end_location = end_location["candidates"][0]["plus_code"]["global_code"]
+        print(end_location)
+      else:
+        raise Exception("Location not found")
+
+      json_data = {
+      'origin': {
+          "address": start_location
+      },
+      'destination': {
+        "address": end_location
+      },
+      'travelMode': travel_mode,
+      'departureTime': departure_time,
+      'arrivalTime': arrival_time,
+      'computeAlternativeRoutes': False,
+      'routeModifiers': {
+          'avoidTolls': False,
+          'avoidHighways': False,
+          'avoidFerries': False,
+      },
+      'languageCode': localization["language_identifiers"]["full"],
+      'units': 'METRIC',
+  }
+      response = requests.post('https://routes.googleapis.com/directions/v2:computeRoutes', headers=headers, json=json_data)
       print(response.json())
-      raise Exception("Location not found")
+
+      if response.status_code == 200:
+        return response.json()["routes"][0]
+      else:
+         raise Exception("Route not found")
+      
   else:
      print(response.json())
 class Section:
@@ -72,7 +118,8 @@ def generate_sections(steps, segments):
 
 #Processing
 
-def get_formatted_sections(sections):
+def get_formatted_sections(meta_data, sections):
+  localization = get_localization(meta_data.language)
   counter = 1
   final_string = ""
   print("Temporary Sections:")
@@ -91,7 +138,8 @@ def get_formatted_sections(sections):
 
 
 
-def public_transport_route_fetching_handler(arguments, lang="en"):
+def public_transport_route_fetching_handler(meta_data, arguments, lang="en"):
+  localization = get_localization(meta_data.language)
   format_order = localization["functions"]["maps"]["sections"]["departure"] + "\n"
   start_location = arguments.get("origin") or "Wachenheim" #TODO: Use current user supplied location
   print(start_location)

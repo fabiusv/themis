@@ -2,12 +2,16 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import json
+import os
+from ....localization.localizer import get_localization
 
-localization = json.load(open("localization/active.json"))
+#print current path
 
 
+def formatSnippet(meta_data, string):
+        
+        localization = get_localization(meta_data.language)
 
-def formatSnippet(string):
         fixed_string = re.sub(r'([a-z])([A-Z])', r'\1 \2', string)
         fixed_string = re.sub(r'(\D)(\d)', r'\1 \2', fixed_string)
 
@@ -33,7 +37,9 @@ def formatSnippet(string):
         #print("formatted snippet: " + fixed_string)
         return fixed_string
 
-def formatURL(searchterm):
+def formatURL(meta_data, searchterm):
+        
+        localization = get_localization(meta_data.language)
 
         lang = localization["language_identifiers"]["short"]
 
@@ -62,7 +68,10 @@ def formatURL(searchterm):
 
         return url
 
-def searchSnippet(term):
+def searchSnippet(meta_data, term):
+
+    localization = get_localization(meta_data.language)
+
     lang = localization["language_identifiers"]["short"]
 
     if lang == "en":
@@ -82,7 +91,7 @@ def searchSnippet(term):
         "TE": "Trailers",
     }
 
-    url = formatURL(term)
+    url = formatURL(meta_data, term)
 
     response = requests.get(url, headers=headers)
 
@@ -110,17 +119,15 @@ def searchSnippet(term):
 
     if target_class:
         target_element = soup.find("div", {"class": target_class})
-        target_text = target_element.text.strip()
+        target_text = target_element.text.strip() # type: ignore
         #print(target_text)
         target_text = target_text.split(localization["functions"]["search"]["snippet_target_identifiers"]["start"])[0]
         target_text = target_text.split(localization["functions"]["search"]["snippet_target_identifiers"]["stop"])[0]
         if target_text in localization["functions"]["search"]["snippet_target_identifiers"]["not_found_strings"] or localization["functions"]["search"]["snippet_target_identifiers"]["ip_message"] in target_text:
-            print("Could not find a snippet")
             return None
         #print("unformatted snippet: " + target_text)
-        return formatSnippet(target_text)
+        return formatSnippet(meta_data, target_text)
     else:
-        print("Could not find the class that contains 'Hervorgehobenes Snippet aus dem Web'")
         return None
 
 

@@ -1,13 +1,9 @@
-class ChatMessage:
-	def __init__(self, role, content, is_insert = False, id=None):
-		self.role = role
-		self.content = content
-		self.id = id
-		self.is_insert = is_insert
 
-class Conversation:
-	def __init__(self, messages = []):
-		self.messages = messages
+import pydantic
+from .ChatMessage import ChatMessage
+
+class Conversation(pydantic.BaseModel):
+	messages: list[ChatMessage] = []
 	def convertToOpenAI(self, remove_inserts = True):
 		tempChatHistory = []
 		for message in self.messages:
@@ -27,4 +23,9 @@ class Conversation:
 	def append(self, message):
 		self.messages.append(message)
 		return self
-	
+	def encode(self):
+		return {"messages": [message.encode() for message in self.messages]}
+	@staticmethod
+	def decode(conversation_dict):
+		return Conversation(messages=[ChatMessage.decode(message_dict) for message_dict in conversation_dict["messages"]])
+

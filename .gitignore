@@ -1,10 +1,10 @@
 gcloud_cli
 __pycache__
 .DS_Store
-client_api_key.json
-openai_key.json
-client_secret.json
+client_api_key.py
+openai_key.py
+client_secret.py
 oauth.json
-bahn_project_key.json
-maps_platform_key.json
+bahn_project_key.py
+maps_platform_key.py
 task_tracker.md

@@ -1,10 +1,9 @@
-import requests
 from bs4 import BeautifulSoup
 import os
 import json
- 
-
-localization = json.load(open("localization/active.json"))
+import requests
+from ....localization.localizer import get_localization
+from ....authentication.Authenticator import Authenticator
 
 class Page():
     def __init__(self, title, url, text=""):
@@ -14,10 +13,11 @@ class Page():
     
     
 
-def fetch_google_results(query, lang="en"):
-    import requests
+def fetch_google_results(meta_data, query, lang="en"):
+    localization = get_localization(meta_data.language)
+
     
-    key = json.load(open("authentication/gcloud/client_api_key.json"))["api_key"]
+    key = Authenticator.get_google_cloud_key()
     url = 'https://customsearch.googleapis.com/customsearch/v1'
     
     if localization["language_identifiers"]["short"] == "en":
@@ -32,8 +32,11 @@ def fetch_google_results(query, lang="en"):
         'q':query,
         'key': key
     }
+
+    print(params)
     headers = {'Accept': 'application/json'}
     response = requests.get(url, params=params, headers=headers)
+    print(response.json())
     pages = []
     for item in response.json()["items"]:
         pages.append(Page(item["title"], item["link"]))
