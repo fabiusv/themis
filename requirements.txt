@@ -56,3 +56,4 @@ watchfiles
 websockets
 wheel
 yarl
+timezonefinder
