@@ -48,9 +48,9 @@ def fetch_routes(meta_data, start_location, end_location, travel_mode, departure
     return response.json()["routes"][0]
   elif response.status_code == 404:
       
-      start_location = fetch_places_json(start_location)
+      start_location = fetch_places_json(meta_data, start_location)
       print(start_location)
-      end_location = fetch_places_json(end_location)
+      end_location = fetch_places_json(meta_data, end_location)
       print(end_location)
 
       if start_location and end_location:
@@ -165,5 +165,3 @@ def public_transport_route_fetching_handler(meta_data, arguments, lang="en"):
   formatted_sections = get_formatted_sections(meta_data, sections)
   formatted_route = format_order +  localization["functions"]["maps"]["route"]["total_duration"] + duration_text + localization["functions"]["maps"]["sections"]["departure"] + formatted_sections
   return formatted_route
-
-

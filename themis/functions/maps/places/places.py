@@ -3,7 +3,7 @@ import urllib.parse
 import json
 
 
-def fetch_places_json(query, isOpen=False, radius=None, location=None):
+def fetch_places_json(meta_data, query, isOpen=False, radius=None):
 
     #query, isOpen, radius, location
     query = query
