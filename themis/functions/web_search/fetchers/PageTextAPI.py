@@ -3,7 +3,7 @@ import os
 import json
 import requests
 from ....localization.localizer import get_localization
-from ....authentication.Authenticator import Authenticator
+import os
 
 class Page():
     def __init__(self, title, url, text=""):
@@ -17,7 +17,7 @@ def fetch_google_results(meta_data, query, lang="en"):
     localization = get_localization(meta_data.language)
 
     
-    key = Authenticator.get_google_cloud_key()
+    key = os.getenv("gcloud_api_key")
     url = 'https://customsearch.googleapis.com/customsearch/v1'
     
     if localization["language_identifiers"]["short"] == "en":

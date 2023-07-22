@@ -1,9 +1,11 @@
-import pymongo
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 import datetime
 
 class ContextDatabaseManager():
    def __init__(self):
-      self.client = pymongo.MongoClient("mongodb://localhost:27017/")
+      uri = "mongodb+srv://fabiusv:BcY2tswvrIKjEbwO@themiscluster.destxlo.mongodb.net/?retryWrites=true&w=majority"
+      self.client = MongoClient(uri, server_api=ServerApi('1'))
       self.db = self.client["themis"]
       self.collection = self.db["context"]
 

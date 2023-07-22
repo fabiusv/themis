@@ -1,7 +1,7 @@
 import openai
 from .functions import *
 import json
-from .authentication.Authenticator import Authenticator
+import os
 class IncompleteResponseError(Exception):
     pass
 
@@ -12,7 +12,7 @@ class Response():
 
 class OpenAIChat:
     def __init__(self):
-        openai.api_key = Authenticator.get_openai_key()
+        openai.api_key = os.getenv("openai_api_key")
     def sendConversation(self, conversation, function_call="auto"):
         try:
             response = openai.ChatCompletion.create(

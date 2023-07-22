@@ -4,8 +4,7 @@ from ...time.time import get_ISO_8601_formatted_datetime, nlp_time_parser_utc
 import json
 from ..places.places import fetch_places_json
 from ....localization.localizer import get_localization
-from ....authentication.Authenticator import Authenticator
-
+import os
 
 def fetch_routes(meta_data, start_location, end_location, travel_mode, departure_time=None, arrival_time=None):
   localization = get_localization(meta_data.language)
@@ -13,7 +12,7 @@ def fetch_routes(meta_data, start_location, end_location, travel_mode, departure
 
   print(start_location)
   print(end_location)
-  key = Authenticator.get_google_cloud_key()
+  key =  os.getenv("gcloud_api_key")
 
   headers = {
       'Content-Type': 'application/json',
