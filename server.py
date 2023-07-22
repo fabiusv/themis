@@ -29,10 +29,6 @@ def validate(user_id: str, api_key):
     
 
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
-
 
 @app.post("/complete_chat/user/{user_id}/key/{api_key}")
 
@@ -78,10 +74,10 @@ async def complete(user_id:str, api_key: str, chatResponse: APIDatamodels.ChatRe
             context_manager.edit(context)
 
         return context
-            
 
 
-@app.get("/function_calling/user/{user_id}/key/{api_key}")
+
+@app.post("/function_calling/user/{user_id}/key/{api_key}")
 async def function_calling(user_id: str, api_key: str, function_calling_object: APIDatamodels.FunctionCallingRequest):
     if validate(user_id, api_key):
         #call function
@@ -93,7 +89,7 @@ async def function_calling(user_id: str, api_key: str, function_calling_object: 
 
 @app.post("/register")
 async def register(user: APIDatamodels.RegisterRequest):
-
+    #raise HTTPException(status_code=400, detail="This endpoint is currently closed")
     user_manager = UserDatabaseManager()
     if user_manager.find_by_email(user.email) is not None:
         raise HTTPException(status_code=409, detail="Email already in use")
