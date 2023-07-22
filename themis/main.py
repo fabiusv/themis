@@ -5,14 +5,14 @@ from .functions.maps.routes.routes import public_transport_route_fetching_handle
 
 from .Dataclasses import *
 
-from .OpenAPICharWrapper import OpenAIChat
+from .OpenAIChatWrapper import OpenAIChat
 from .localization.localizer import get_localization
 
 class ThemisHandler():
 
 	def __init__(self):
 		self.chat_instance = OpenAIChat()
-		self.conversation = Conversation()
+		self.conversation = Conversation() #FIXME: Do not use conversation as a class attribute as this does not ensure conversation integrity
 
 	def completion(self, context):
 
@@ -33,7 +33,7 @@ class ThemisHandler():
 			response = self.chat_instance.sendConversation(self.conversation, "none")
 			response = response.result #FIXME: Change variable name to prevent confusion
 
-			self.conversation.messages.append(ChatMessage(role="user", content=response["content"])) #type: ignore
+			self.conversation.messages.append(ChatMessage(role="assistant", content=response["content"])) #type: ignore
 
 			return self.conversation.messages
 			
@@ -41,7 +41,7 @@ class ThemisHandler():
 	#no function call required:
 		elif response.result:
 			response = response.result
-			self.conversation.messages.append(ChatMessage(role="user", content=response["content"]))
+			self.conversation.messages.append(ChatMessage(role="assistant", content=response["content"]))
 			return self.conversation.messages
 
 	#Error handling
