@@ -141,6 +141,8 @@ def public_transport_route_fetching_handler(meta_data, arguments, lang="en"):
   localization = get_localization(meta_data.language)
   format_order = localization["functions"]["maps"]["sections"]["departure"] + "\n"
   start_location = arguments.get("origin") or "Wachenheim" #TODO: Use current user supplied location
+  if "hier" in start_location:
+    start_location = "Wachenheim" #TODO: Use current user supplied location
   print(start_location)
   end_location = arguments["destination"]
   print(end_location)
