@@ -28,9 +28,10 @@ def validate(user_id: str, api_key):
     return True
     
 
-@app.get("/ping")
+@app.head("/ping")
 async def ping():
     return {"success": True}
+
 
 
 
