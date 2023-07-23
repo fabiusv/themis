@@ -25,7 +25,7 @@ def performSearch(meta_data, arguments):
     snippet = SnippetFetcher.searchSnippet(meta_data, input_query)
 
     if snippet:
-        å
+        
         return localization["functions"]["search"]["snippet_instruction"] + snippet
     else:
         print("Fetching pages")
