@@ -28,6 +28,10 @@ def validate(user_id: str, api_key):
     return True
     
 
+@app.get("/ping")
+async def ping():
+    return {"success": True}
+
 
 
 @app.post("/complete_chat/user/{user_id}/key/{api_key}")
