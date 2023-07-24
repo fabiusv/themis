@@ -13,7 +13,7 @@ class ThemisHandler():
 	def __init__(self):
 		self.chat_instance = OpenAIChat()
 		self.conversation = Conversation() #FIXME: Do not use conversation as a class attribute as this does not ensure conversation integrity
-
+	
 	def completion(self, context):
 
 		localization = get_localization(context.meta_data.language)
@@ -46,6 +46,7 @@ class ThemisHandler():
 
 	#Error handling
 		else:		
+			print(response.error)
 			raise Exception("Error in completion function")
 		
 

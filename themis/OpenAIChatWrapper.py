@@ -16,7 +16,7 @@ class OpenAIChat:
     def sendConversation(self, conversation, function_call="auto"):
         try:
             response = openai.ChatCompletion.create(
-                        model="gpt-4", #gpt-3.5-turbo-0613
+                        model="gpt-3.5-turbo-0613",
                         messages=conversation.convertToOpenAI(),
                         functions= openai_function_documentation,
                         function_call=function_call,
@@ -38,8 +38,9 @@ class OpenAIChat:
         except openai.error.APIConnectionError: 
             error_messsage = "Der Server konnte keine Verbindung mit dem OpenAI Server herstellen."
             response = Response(None, error_messsage)
-        except:
-            error_message = "Es ist ein Fehler aufgetreten, bitte versuche es später erneut."
-            response = Response(None, error_message)
+        #except:
+            
+          #  error_message = "Es ist ein Fehler aufgetreten, bitte versuche es später erneut."
+         #   response = Response(None, error_message)
             
         return response
