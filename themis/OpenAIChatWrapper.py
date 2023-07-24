@@ -16,7 +16,7 @@ class OpenAIChat:
     def sendConversation(self, conversation, function_call="auto"):
         try:
             response = openai.ChatCompletion.create(
-                        model="gpt-4-0613", #gpt-3.5-turbo-0613
+                        model="gpt-4", #gpt-3.5-turbo-0613
                         messages=conversation.convertToOpenAI(),
                         functions= openai_function_documentation,
                         function_call=function_call,
