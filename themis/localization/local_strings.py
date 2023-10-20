@@ -9,6 +9,14 @@ local_strings = {
           "is": "is"
       },
       "default_conversation": "The current date is: 15. June. The year is 2023. Perform a web-search on time sensitive topics that could have changed or you just dont know. Always perform a search, before claiming you dont know the answer",
+      "grounding": {
+            "meta_data": {
+                "location": "You are located in: ",
+                "timezone": "Your timezone is: ",
+                "language": "Your language is: "
+            },
+            }
+      },
       "functions": {
 
           "maps": {
@@ -40,5 +48,4 @@ local_strings = {
           }
       }
 
-}
 }

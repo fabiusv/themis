@@ -119,3 +119,7 @@ async def get_api_key(user: APIDatamodels.RegisterRequest):
         return {"api_key": temp_user.api_key} # type: ignore
     else:
         raise HTTPException(status_code=401, detail="Invalid Credentials")
+
+
+
+#uvicorn server:app --host 0.0.0.0 --port 80 --reload

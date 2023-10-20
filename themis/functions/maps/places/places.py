@@ -23,3 +23,5 @@ def fetch_places_json(meta_data, query, isOpen=False, radius=None):
     else:
         return None
 
+
+#print(fetch_places_json(None, "restaurant"))

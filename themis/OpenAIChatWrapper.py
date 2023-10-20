@@ -2,6 +2,10 @@ import openai
 from .functions import *
 import json
 import os
+from dotenv import load_dotenv
+
+
+
 class IncompleteResponseError(Exception):
     pass
 
@@ -12,6 +16,9 @@ class Response():
 
 class OpenAIChat:
     def __init__(self):
+        load_dotenv()
+        print("key: \n \n \n \n")
+        print(os.getenv("openai_api_key"))
         openai.api_key = os.getenv("openai_api_key")
     def sendConversation(self, conversation, function_call="auto"):
         try:
