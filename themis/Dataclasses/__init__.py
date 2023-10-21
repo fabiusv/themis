@@ -4,3 +4,5 @@ from .Context import Context
 from .Location import Location
 from .User import User
 from .MetaData import MetaData
+from .PersonalStorage import PersonalStorage
+from .PersonFile import PersonFile

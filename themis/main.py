@@ -51,7 +51,6 @@ class ThemisHandler():
 		
 
 
-
 if __name__ == "__main__":
 	localization = localization = get_localization("de")
 

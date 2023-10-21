@@ -12,7 +12,7 @@ class UserDatabaseManager():
       self.collection.insert_one(user.encode())
 
    def edit(self, user):
-      self.collection.update_one({"user_id": user.id}, {"$set": user.encode()})
+      self.collection.update_one({"user_id": user.user_id}, {"$set": user.encode()})
 
    def find_by_id(self, user_id):
       print("finding")

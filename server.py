@@ -13,6 +13,8 @@ from DatabaseHandlers.UserDBHandler import UserDatabaseManager
 import APIDatamodels
 
 import themis
+import themis.Dataclasses as dtc
+
 
 app = FastAPI()
 handler = themis.ThemisHandler()
@@ -21,6 +23,7 @@ def validate(user_id: str, api_key):
     print(user_id)
     user_manager = UserDatabaseManager()
     user = user_manager.find_by_id(user_id)
+    UserDatabaseManager().edit(user)
     if user is None:
         raise HTTPException(status_code=404, detail="User ID not found")
     if user.api_key != api_key:
@@ -47,8 +50,7 @@ async def complete(user_id:str, api_key: str, chatResponse: APIDatamodels.ChatRe
             context = themis.Context(user_id=user_id, context_id=context_id, creation=datetime.datetime.now(), last_modification=datetime.datetime.now(), conversation=themis.Conversation(messages=[]), meta_data=themis.MetaData(location=themis.Location(lat=chatResponse.location.lat, lng=chatResponse.location.lng), timezone=chatResponse.timezone, language=chatResponse.language))
             context.conversation.messages.append(themis.ChatMessage(role="user", content=chatResponse.message))
             
-            
-            #douplicated code to reduce database operations in order to decrease latency
+            #duplicated code to reduce database operations in order to decrease latency
             response = handler.completion(context)
 
             context.last_modification = datetime.datetime.now()
@@ -120,6 +122,17 @@ async def get_api_key(user: APIDatamodels.RegisterRequest):
     else:
         raise HTTPException(status_code=401, detail="Invalid Credentials")
 
-
-
 #uvicorn server:app --host 0.0.0.0 --port 80 --reload
+
+
+@app.post("/edit_person_file/user/{user_id}/key/{api_key}")
+async def edit_person_file(user_id: str, api_key: str, person_file: APIDatamodels.PersonFileRequest):
+    if validate(user_id, api_key):
+        user_manager = UserDatabaseManager()
+        user = user_manager.find_by_id(user_id)
+
+        user.personal_storage.persons.append(dtc.PersonFile(first_name=person_file.first_name, last_name=person_file.last_name, birthdate=person_file.birthdate, personal_interactions=person_file.personal_interactions))
+        user_manager.edit(user)
+        return {"success": True}
+    else:
+        raise HTTPException(status_code=401, detail="Invalid Credentials")
