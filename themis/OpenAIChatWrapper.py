@@ -1,7 +1,6 @@
 import openai
 from openai import OpenAI
 
-client = OpenAI(api_key=os.getenv("openai_api_key"))
 from .functions import *
 import json
 import os
@@ -20,22 +19,26 @@ class Response():
 class OpenAIChat:
     def __init__(self):
         load_dotenv()
-        print("key: \n \n \n \n")
-        print(os.getenv("openai_api_key"))
+        self.client = OpenAI(api_key=os.getenv("openai_api_key"))
+
+        #print("key: \n \n \n \n")
+        #
+        # print(os.getenv("openai_api_key"))
         
     def sendConversation(self, conversation, function_call="auto"):
         try:
-            response = client.chat.completions.create(model="gpt-3.5-turbo-0613",  #
+            response = self.client.chat.completions.create(model="gpt-3.5-turbo-0613",  #
             messages=conversation.convertToOpenAI(),
             functions= openai_function_documentation,
             function_call=function_call)
             
             try:
-                response["choices"][0]["message"]
+                print("Response:")
+                print(response.choices[0])
+            
+                response = Response(response.choices[0], None)
             except:
                 raise IncompleteResponseError
-            response = Response(response["choices"][0]["message"], None)
-
         except openai.RateLimitError:
             error_message = "Du hast zu viele anfragen geschickt, bitte warte einen moment."
             response = Response(None, error_message)
@@ -43,7 +46,7 @@ class OpenAIChat:
         except IncompleteResponseError:
             error_message = "Die antwort vom Server war fehlerhaft, bitte versuche es später erneut."
             response = Response(None, error_message)
-        except openai.error.APIConnectionError: 
+        except openai.APIConnectionError: 
             error_messsage = "Der Server konnte keine Verbindung mit dem OpenAI Server herstellen."
             response = Response(None, error_messsage)
         #except:

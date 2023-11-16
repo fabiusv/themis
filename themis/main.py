@@ -20,32 +20,35 @@ class ThemisHandler():
 
 		self.conversation.messages = context.conversation.messages
 		response = self.chat_instance.sendConversation(self.conversation)
-		if response.result and response.result.get("function_call"):
+		
 
-			response = response.result
-			arguments = json.loads(response["function_call"]["arguments"])
-			name = response["function_call"]["name"]
+		if response.result and response.result.finish_reason=="function_call":
+			
+			arguments = response.result.message.function_call.arguments
+			arguments = json.loads(arguments)
+
+			name = response.result.message.function_call.name
 
 			function_response = function_dict[name](context.meta_data, arguments)
 			
 			self.conversation.messages.append(ChatMessage(role="user", content=function_response, is_insert=True))
 			
 			response = self.chat_instance.sendConversation(self.conversation, "none")
-			response = response.result #FIXME: Change variable name to prevent confusion
 
-			self.conversation.messages.append(ChatMessage(role="assistant", content=response["content"])) #type: ignore
+			self.conversation.messages.append(ChatMessage(role="assistant", content=response.result.message.content)) #type: ignore
 
 			return self.conversation.messages
 			
 
 	#no function call required:
-		elif response.result:
-			response = response.result
-			self.conversation.messages.append(ChatMessage(role="assistant", content=response["content"]))
+		elif response:
+			response = response.result.message.result.content
+			self.conversation.messages.append(ChatMessage(role="assistant", content=response))
 			return self.conversation.messages
 
 	#Error handling
-		else:		
+		else:
+			print(response)		
 			print(response.error)
 			raise Exception("Error in completion function")
 		
