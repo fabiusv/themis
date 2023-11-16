@@ -28,3 +28,8 @@ def searchWikiSummary(search_term, lang="en"):
 #summary = get_summary(search_term)
 #
 #print(searchWikiSummary("Elon Musk"))
+
+
+
+#all days up to (including) 01.12.2023, excluding weekends
+

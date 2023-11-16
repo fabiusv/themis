@@ -21,10 +21,12 @@ def nlp_time_parser_utc(date_string):
         formatted_time = result.strftime("%Y-%m-%dT%H:%M:%S.%f")
         formatted_time += 'Z'
         return formatted_time
-    except:
+    except Exception as e:
+        print(e)
         return None
 
-    
+print(nlp_time_parser_utc("8:00 PM"))
+
 def get_ISO_8601_formatted_datetime(location) -> str:
     if not location: #TODO: Or location is in germany
         now = datetime.datetime.now()

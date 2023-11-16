@@ -4,6 +4,7 @@ import json
 import requests
 from ....localization.localizer import get_localization
 import os
+from dotenv import load_dotenv
 
 class Page():
     def __init__(self, title, url, text=""):
@@ -16,7 +17,8 @@ class Page():
 def fetch_google_results(meta_data, query, lang="en"):
     localization = get_localization(meta_data.language)
 
-    
+    load_dotenv()
+
     key = os.getenv("gcloud_api_key")
     url = 'https://customsearch.googleapis.com/customsearch/v1'
     
@@ -39,7 +41,8 @@ def fetch_google_results(meta_data, query, lang="en"):
     print(response.json())
     pages = []
     for item in response.json()["items"]:
-        pages.append(Page(item["title"], item["link"]))
+
+        pages.append(Page(item["title"], item["link"], item["snippet"])) #TODO Maybe replace snippet with
     
     return pages
 

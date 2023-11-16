@@ -2,13 +2,16 @@ import requests
 import datetime
 from ...time.time import get_ISO_8601_formatted_datetime, nlp_time_parser_utc
 import json
-from ..places.places import fetch_places_json
+from ..places.places import place_search
 from ....localization.localizer import get_localization
 import os
 
 def fetch_routes(meta_data, start_location, end_location, travel_mode, departure_time=None, arrival_time=None):
   localization = get_localization(meta_data.language)
 
+  print("Departue and Arrival:")
+  print(departure_time)
+  print(arrival_time)
 
   print(start_location)
   print(end_location)
@@ -47,15 +50,15 @@ def fetch_routes(meta_data, start_location, end_location, travel_mode, departure
     return response.json()["routes"][0]
   elif response.status_code == 404:
       
-      start_location = fetch_places_json(meta_data, start_location)
+      start_location = place_search(meta_data, start_location)
       print(start_location)
-      end_location = fetch_places_json(meta_data, end_location)
+      end_location = place_search(meta_data, end_location)
       print(end_location)
 
       if start_location and end_location:
-        start_location = start_location["candidates"][0]["plus_code"]["global_code"]
+        start_location = start_location[0]["formattedAddress"]
         print(start_location)
-        end_location = end_location["candidates"][0]["plus_code"]["global_code"]
+        end_location = end_location[0]["formattedAddress"]
         print(end_location)
       else:
         raise Exception("Location not found")
@@ -141,15 +144,36 @@ def public_transport_route_fetching_handler(meta_data, arguments, lang="en"):
   localization = get_localization(meta_data.language)
   format_order = localization["functions"]["maps"]["sections"]["departure"] + "\n"
   start_location = arguments.get("origin") or "Wachenheim" #TODO: Use current user supplied location
-  if "hier" in start_location:
+  print("The start location is: " + start_location)
+  if "hier" in start_location.lower() or "meine Stadt" in start_location.lower():
     start_location = "Wachenheim" #TODO: Use current user supplied location
   print(start_location)
   end_location = arguments["destination"]
   print(end_location)
-  
-  departure_time = nlp_time_parser_utc(arguments.get("en_departure_time"))
-  arrival_time = nlp_time_parser_utc(arguments.get(arguments.get("en_arrival_time")))
 
+  print("**"*10)
+  try:
+    departure_formatted = arguments.get("en_departure_time").strip()
+    departure_time = nlp_time_parser_utc(departure_formatted)
+  except:
+    departure_time = nlp_time_parser_utc("Now")
+  try:
+    arrival_formatted = arguments.get("en_arrival_time").strip()
+    arrival_time = nlp_time_parser_utc(arrival_formatted)
+  except:
+    arrival_time = None
+
+  print(departure_time)
+  print(arrival_time)
+  
+
+  
+  
+
+  print("Formatted")
+  print(departure_time)
+  print(arrival_time)
+  print("**"*10)
   #Make sure only one of the two is set
   if arrival_time:
      departure_time = None

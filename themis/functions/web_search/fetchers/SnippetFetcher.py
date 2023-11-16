@@ -3,15 +3,72 @@ from bs4 import BeautifulSoup
 import re
 import json
 import os
+
+import pydantic # type: ignore
+
+class MetaData(pydantic.BaseModel):
+  timezone: str
+  language: str
+
 from ....localization.localizer import get_localization
 
 #print current path
+localization = {
+      "language_identifiers": {
+          "short":"en",
+          "full":"en-US"
+      },
+      "common_words":{
+          "and":"and",
+          "is": "is"
+      },
+      "default_conversation": "The current date is: 15. June. The year is 2023. Perform a web-search on time sensitive topics that could have changed or you just dont know. Always perform a search, before claiming you dont know the answer",
+      "grounding": {
+            "meta_data": {
+                "location": "You are located in: ",
+                "timezone": "Your timezone is: ",
+                "language": "Your language is: "
+            },
+      },
+      
+      "functions": {
 
+          "maps": {
+              "sections": {
+                  "section_instruction": "It consists of these section(s): ",
+                  "departure":"Departure at: ",
+                  "duration": "Duration: ",
+                  "minutes": "Minuten"
+              },
+              "route": {
+                  "total_duration": "Total time "
+                  
+              },
+              "format_order": "Format this information in a flowing text that can be read out by a virtual assistant:"
+          },
+
+          "search":{
+              "snippet_instruction": "Real-time websearch response:\n",
+              "snippet_formatting": {
+                  "stripped_strings": ["Wähle aus, wozu du Feedback geben möchtest Du kannst auch allgemeines Feedback geben Feedback geben", "Feedback geben", "Hervorgehobenes Snippet aus dem Web"] 
+              },
+              "snippet_target_identifiers": {
+                  "snippet_locator_string": "Feedback geben",
+                  "start": "Wird auch oft gesucht",
+                  "stop": "Andere suchten auch nach",
+                  "ip_message": "Laut deiner IP-Adresse",
+                  "not_found_strings": ["Feedback geben", "Informationen zu hervorgehobenen Snippets•Feedback geben" ]
+              }
+          }
+      }
+
+}
 
 def formatSnippet(meta_data, string):
         
         localization = get_localization(meta_data.language)
-
+        
+        
         fixed_string = re.sub(r'([a-z])([A-Z])', r'\1 \2', string)
         fixed_string = re.sub(r'(\D)(\d)', r'\1 \2', fixed_string)
 
@@ -72,7 +129,10 @@ def searchSnippet(meta_data, term):
 
     localization = get_localization(meta_data.language)
 
+
     lang = localization["language_identifiers"]["short"]
+
+
 
     if lang == "en":
         accept_lang = "en-US,en;q=0.5"
@@ -95,41 +155,68 @@ def searchSnippet(meta_data, term):
 
     response = requests.get(url, headers=headers)
 
+
     soup = BeautifulSoup(response.content, "html.parser")
     
     #save html file
-    #with open("test.html", "w") as file:
-    #   file.write(str(soup))
+    with open("test.html", "w") as file:
+       file.write(str(soup))
 
     # Find the deepest class that contains the text "Hervorgehobenes Snippet aus dem Web"
     target_class = None
-    deepest_class_level = 0
+
+    result_list= []
     for div in soup.find_all("div"):
-        this_class = []
         if div.get("class"):
-            this_class = div.get("class")
+            #get lowest class level
+            while div.find("div"):
+                div = div.find("div")
 
-        if localization["functions"]["search"]["snippet_target_identifiers"]["snippet_locator_string"] in div.text or "Z0LcW t2b5Cf" in this_class:
-            class_list = div.get("class")
-            if class_list:
-                class_levels = len(class_list)
-                if class_levels > deepest_class_level:
-                    deepest_class_level = class_levels
-                    target_class = class_list[-1]
-
-    if target_class:
-        target_element = soup.find("div", {"class": target_class})
-        target_text = target_element.text.strip() # type: ignore
-        #print(target_text)
-        target_text = target_text.split(localization["functions"]["search"]["snippet_target_identifiers"]["start"])[0]
-        target_text = target_text.split(localization["functions"]["search"]["snippet_target_identifiers"]["stop"])[0]
-        if target_text in localization["functions"]["search"]["snippet_target_identifiers"]["not_found_strings"] or localization["functions"]["search"]["snippet_target_identifiers"]["ip_message"] in target_text:
-            return None
-        #print("unformatted snippet: " + target_text)
-        return formatSnippet(meta_data, target_text)
-    else:
+            if div.text != "" and not len(div.text)>1000:
+                result_list.append(div.text.strip())
+            #remove duplicates
+            result_list = list(dict.fromkeys(result_list))
+    
+    #print(result_list)
+    try:
+        start_index = result_list.index("News")+3
+    except:
         return None
 
+    backup_stop_index = 8
 
-#print(searchSnippet("Super Bowl 2023 winner", lang="en"))
+    try:
+        stop_index = result_list.index("Wird auch oft gesucht") 
+    except:
+        try:
+            stop_index = result_list.index("Andere suchten auch nach")
+        except:
+            stop_index = start_index + backup_stop_index
+
+    if stop_index < backup_stop_index:
+        stop_index = start_index + backup_stop_index
+    
+
+    return "\n".join(result_list[start_index:stop_index])
+
+#print(searchSnippet( MetaData(timezone="utc", language="en"), "What age is the queen of england"))
+
+
+
+def search_serapi(meta_data, query):
+    try:
+        url = "https://serpapi.com/search"
+        
+        params = {
+            "engine": "google",
+            "q": query,
+            "num":1,
+            "api_key": "92afe9e03769963c5061e4179f4799416262b8e53838e8907760b1f2bee5392a"#FIXME: Remove API Key
+        }
+        
+        response = requests.get(url, params=params)
+        return response.json()["answer_box"]["answer"]
+    except:
+        return None
+        
 

@@ -18,7 +18,7 @@ class Conversation(pydantic.BaseModel):
 			tempChatHistory.append({"role": self.messages[-1].role, "content": self.messages[-1].content})
 		print("Last message: ")
 		print(self.messages[-1].content)
-		print(tempChatHistory)	
+		print(tempChatHistory)
 		return tempChatHistory
 	def append(self, message):
 		self.messages.append(message)

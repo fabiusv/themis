@@ -15,8 +15,8 @@ local_strings = {
                 "timezone": "Your timezone is: ",
                 "language": "Your language is: "
             },
-            }
       },
+      
       "functions": {
 
           "maps": {
@@ -48,4 +48,5 @@ local_strings = {
           }
       }
 
+}
 }
