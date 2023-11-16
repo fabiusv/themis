@@ -1,4 +1,7 @@
 import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("openai_api_key"))
 from .functions import *
 import json
 import os
@@ -19,15 +22,13 @@ class OpenAIChat:
         load_dotenv()
         print("key: \n \n \n \n")
         print(os.getenv("openai_api_key"))
-        openai.api_key = os.getenv("openai_api_key")
+        
     def sendConversation(self, conversation, function_call="auto"):
         try:
-            response = openai.ChatCompletion.create(
-                        model="gpt-3.5-turbo-0613",  #
-                        messages=conversation.convertToOpenAI(),
-                        functions= openai_function_documentation,
-                        function_call=function_call,
-                    )
+            response = client.chat.completions.create(model="gpt-3.5-turbo-0613",  #
+            messages=conversation.convertToOpenAI(),
+            functions= openai_function_documentation,
+            function_call=function_call)
             
             try:
                 response["choices"][0]["message"]
@@ -35,7 +36,7 @@ class OpenAIChat:
                 raise IncompleteResponseError
             response = Response(response["choices"][0]["message"], None)
 
-        except openai.error.RateLimitError:
+        except openai.RateLimitError:
             error_message = "Du hast zu viele anfragen geschickt, bitte warte einen moment."
             response = Response(None, error_message)
 
