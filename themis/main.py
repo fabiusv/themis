@@ -19,15 +19,15 @@ class ThemisHandler():
 		localization = get_localization(context.meta_data.language)
 
 		self.conversation.messages = context.conversation.messages
-		response = self.chat_instance.sendConversation(self.conversation)
+		initial_response = self.chat_instance.sendConversation(self.conversation)
 		
 
-		if response.result and response.result.finish_reason=="function_call":
+		if initial_response.result and initial_response.result.finish_reason=="function_call":
 			
-			arguments = response.result.message.function_call.arguments
+			arguments = initial_response.result.message.function_call.arguments
 			arguments = json.loads(arguments)
 
-			name = response.result.message.function_call.name
+			name = initial_response.result.message.function_call.name
 
 			function_response = function_dict[name](context.meta_data, arguments)
 			
@@ -41,8 +41,8 @@ class ThemisHandler():
 			
 
 	#no function call required:
-		elif response:
-			response = response.result.message.result.content
+		elif initial_response.result:
+			response = initial_response.result.message.content
 			self.conversation.messages.append(ChatMessage(role="assistant", content=response))
 			return self.conversation.messages
 
