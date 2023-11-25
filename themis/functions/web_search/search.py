@@ -39,14 +39,31 @@ def performSearch(meta_data, arguments, is_routine=False):
     if snippet:
         
         snippet = localization["functions"]["search"]["snippet_instruction"] + snippet
-        pages = PageTextAPI.fetch_google_results(meta_data, input_query) #TODO: fetch hole website rather than the snippet only
-        return snippet + "\n" + pages[0].title+ ": " + pages[0].text
+        pages = PageTextAPI.fetch_google_results(meta_data, input_query) #FIXME: fetch hole website rather than the snippet onl
+        page_0_request = requests.get(pages[0].url)
+
+        soup = BeautifulSoup(page_0_request.text, 'html.parser')
+
+            # Extract text content
+        text_content = soup.get_text()
+
+            # Print the text content
+
+        cleaned_text = '\n'.join(line.strip() for line in text_content.splitlines() if line.strip())
+        
+        try:
+            cleaned_text = cleaned_text[2000:-4000]
+        except:
+            pass
+        print(cleaned_text)
+
+        return snippet + "\n" + pages[0].title+  ": " + pages[0].text
 
     else: 
         pages = PageTextAPI.fetch_google_results(meta_data, input_query) 
         return pages[0].title+ ": " + pages[0].text
     return ""
-
+    
 def search_pages_only():
 
     pages = PageTextAPI.fetch_google_results(meta_data, input_query) #FIXME: Page Fetcher is not working

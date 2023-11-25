@@ -35,14 +35,14 @@ def fetch_google_results(meta_data, query, lang="en"):
         'key': key
     }
 
-    print(params)
+    #print(params)
     headers = {'Accept': 'application/json'}
     response = requests.get(url, params=params, headers=headers)
-    print(response.json())
+    #print(response.json())
     pages = []
     for item in response.json()["items"]:
 
-        pages.append(Page(item["title"], item["link"], item["snippet"])) #TODO Maybe replace snippet with
+        pages.append(Page(item["title"], item["link"], item["snippet"])) #TODO Maybe replace snippet with full text
     
-    return pages
 
+    return pages
