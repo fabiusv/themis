@@ -91,24 +91,24 @@ openai_function_documentation = [
                     },
                 },
                 
-                {
-                    "name": "search_place_information",
-                    "description": "Search places on google maps like restaurants and hotels, only if the user specifically asks for it, e.g. with the phrase: 'What restaurnts are near me'",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                             "query": {
-								"type": "string",
-								"description": "The google maps query to search for places",
-							},
-                             "num_places": {
-                                "type": "integer",
-                                "description": "The number of places to return if the user asks for more places after a prior maps search, 3 is used if nothing is specified",
-                             }
-                        },
-                        "required": ["query", "num_places"],
-                    },
-                },
+              #  {
+               #     "name": "search_place_information",
+                #    "description": "Search places on google maps like restaurants and hotels, only if the user specifically asks for it, e.g. with the phrase: 'What restaurnts are near me'",
+                 #   "parameters": {
+                  #      "type": "object",
+                   #     "properties": {
+                    #         "query": {
+					#			"type": "string",
+					#			"description": "The google maps query to search for places",
+					#		},
+                     #        "num_places": {
+                      #          "type": "integer",
+                       #         "description": "The number of places to return if the user asks for more places after a prior maps search, 3 is used if nothing is specified",
+                       #      }
+                       # },
+                    #    "required": ["query", "num_places"],
+                   # },
+              #  },
                 
 
 			]
