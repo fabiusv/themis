@@ -41,17 +41,21 @@ class OpenAIChat:
                 raise IncompleteResponseError
         except openai.RateLimitError:
             error_message = "Du hast zu viele anfragen geschickt, bitte warte einen moment."
+            print(error_messsage)
             response = Response(None, error_message)
 
         except IncompleteResponseError:
             error_message = "Die antwort vom Server war fehlerhaft, bitte versuche es später erneut."
+            print(error_messsage)
             response = Response(None, error_message)
         except openai.APIConnectionError: 
             error_messsage = "Der Server konnte keine Verbindung mit dem OpenAI Server herstellen."
+            print(error_messsage)
             response = Response(None, error_messsage)
         #except:
             
           #  error_message = "Es ist ein Fehler aufgetreten, bitte versuche es später erneut."
          #   response = Response(None, error_message)
-            
+        print("The response is:")
+        print(response.result)
         return response
