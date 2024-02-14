@@ -203,20 +203,5 @@ def searchSnippet(meta_data, term):
 
 
 
-def search_serapi(meta_data, query):
-    try:
-        url = "https://serpapi.com/search"
-        
-        params = {
-            "engine": "google",
-            "q": query,
-            "num":1,
-            "api_key": "92afe9e03769963c5061e4179f4799416262b8e53838e8907760b1f2bee5392a"#FIXME: Remove API Key
-        }
-        
-        response = requests.get(url, params=params)
-        return response.json()["answer_box"]["answer"]
-    except:
-        return None
         
 

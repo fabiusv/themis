@@ -8,7 +8,7 @@ local_strings = {
           "and":"and",
           "is": "is"
       },
-      "default_conversation": "The current date is: 15. June. The year is 2023. Perform a web-search on time sensitive topics that could have changed or you just dont know. Always perform a search, before claiming you dont know the answer",
+      "default_conversation": "The current date is: 26. November. The year is 2023. Perform a web-search on time sensitive topics that could have changed or you just dont know. Always perform a search, before claiming you dont know the answer. If you recieve a prompt that doesnt make sense in the current context or seems like it isnt adressed to you, respond with [mistaken input]",
       "grounding": {
             "meta_data": {
                 "location": "You are located in: ",

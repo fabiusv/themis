@@ -9,6 +9,7 @@ from .fetchers import PageTextAPI, SnippetFetcher
 from .helpers import web_formatter
 from ...localization.localizer import get_localization
 
+#Replace with Langchain Google Tool if it ever breaks
 def get_website_text(url):
 
     response = requests.get(url)

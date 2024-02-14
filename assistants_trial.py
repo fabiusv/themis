@@ -44,3 +44,25 @@ while run.status != "completed":
 
 messages = client.beta.threads.messages.list(thread_id=thread.id)
 print(messages)
+
+
+
+
+
+import os
+
+os.environ["GOOGLE_CSE_ID"] = "c4415157c33794318"
+os.environ["GOOGLE_API_KEY"] = os.getenv("gcloud_api_key")
+
+from langchain.tools import Tool
+from langchain_community.utilities import GoogleSearchAPIWrapper
+
+search = GoogleSearchAPIWrapper()
+
+tool = Tool(
+    name="Google Search",
+    description="Search Google for recent results.",
+    func=search.run,
+)
+
+print(tool.run("Obama's first name?"))
