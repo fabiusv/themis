@@ -5,7 +5,7 @@ FROM python:3.9
 WORKDIR /app
 
 # Copy the content of the local src directory to the working directory
-COPY src/ .
+COPY Themis/ .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
