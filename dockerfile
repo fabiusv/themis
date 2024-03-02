@@ -1,5 +1,5 @@
 # Use the official Python image as a base
-FROM python:3.9
+FROM python:3.11
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -37,7 +37,7 @@ RUN pip install numpy \
 	python-dotenv
 	
 # Expose port 80
-EXPOSE 80
+EXPOSE 4034
 
 # Run uvicorn command
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "4034", "--reload"]
