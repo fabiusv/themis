@@ -40,4 +40,4 @@ RUN pip install numpy \
 EXPOSE 80
 
 # Run uvicorn command
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "4034", "--reload"]
