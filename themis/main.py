@@ -48,8 +48,8 @@ class ThemisHandler():
 
 	#Error handling
 		else:
-			print(response)		
-			print(response.error)
+			print(initial_response)		
+			print(initial_response.error)
 			raise Exception("Error in completion function")
 		
 

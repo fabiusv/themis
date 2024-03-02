@@ -2,6 +2,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from themis import Dataclasses
 from dotenv import load_dotenv
+import os
 
 class UserDatabaseManager():
    def __init__(self):

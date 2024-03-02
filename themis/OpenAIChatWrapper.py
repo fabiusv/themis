@@ -40,8 +40,9 @@ class OpenAIChat:
             except:
                 raise IncompleteResponseError
         except openai.RateLimitError:
+            print(response)
             error_message = "Du hast zu viele anfragen geschickt, bitte warte einen moment."
-            print(error_messsage)
+            print(error_message)
             response = Response(None, error_message)
 
         except IncompleteResponseError:
