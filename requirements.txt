@@ -25,3 +25,4 @@ websockets==11.0.3
 timezonefinder==5.2.0
 geopy
 python-dotenv
+lxml_html_clean

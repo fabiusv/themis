@@ -16,42 +16,31 @@ class ThemisHandler():
 	
 	def completion(self, context):
 
+		self.conversation.messages = context.conversation.messages
+
 		localization = get_localization(context.meta_data.language)
 
 		self.conversation.messages = context.conversation.messages
-		initial_response = self.chat_instance.sendConversation(self.conversation)
-		
-
-		if initial_response.result and initial_response.result.finish_reason=="function_call":
-			
-			arguments = initial_response.result.message.function_call.arguments
-			arguments = json.loads(arguments)
-
-			name = initial_response.result.message.function_call.name
-
-			function_response = function_dict[name](context.meta_data, arguments)
-			
-			self.conversation.messages.append(ChatMessage(role="user", content=function_response, is_insert=True))
-			
-			response = self.chat_instance.sendConversation(self.conversation, "none")
-
-			self.conversation.messages.append(ChatMessage(role="assistant", content=response.result.message.content)) #type: ignore
-
-			return self.conversation.messages
-			
-
-	#no function call required:
-		elif initial_response.result:
-			response = initial_response.result.message.content
-			self.conversation.messages.append(ChatMessage(role="assistant", content=response))
-			return self.conversation.messages
-
-	#Error handling
+		response = self.chat_instance.sendConversation(self.conversation, context)
+		if not response.error:
+			self.conversation.messages = response.result
 		else:
-			print(initial_response)		
-			print(initial_response.error)
-			raise Exception("Error in completion function")
-		
+			self.conversation.messages.append(ChatMessage(role="system", content="error"))
+		return self.conversation.messages
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
@@ -88,12 +77,10 @@ if __name__ == "__main__":
 
 		#no function call required:
 		elif response.result:
+			
 			response = response.result
-			conversation.messages.append(ChatMessage(role="user", content=response["content"]))
-			print(response["content"])
-
-		#Error handling
 		else:
-			#error_message has been definitly set
+			conversation.messages.append(ChatMessage(role="assistant", content=response["content"]))
+
 			
 			print(response.error) #return to client 

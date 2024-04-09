@@ -13,23 +13,29 @@ function_dict = {
 
 openai_function_documentation = [
                 #Google Search
-				{
-					"name": "realtime_websearch",
-					"description": "Search google for an answer to a question",
-					"parameters": {
-						"type": "object",
-						"properties": {
-							"searchquery": {
-								"type": "string",
-								"description": "The unambiguous search query generated from the conversation history",
-							},
 
-						},
-						"required": ["searchquery"],
-					},
-				}, 
+				{
+                    "type": "function",
+                    "function":
+                        {
+                        "name": "realtime_websearch",
+                        "description": "Search google for an answer to a question",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "searchquery": {
+                                    "type": "string",
+                                    "description": "The unambiguous search query generated from the conversation history",
+                                },
+
+                            },
+                            "required": ["searchquery"],
+                        },
+				}}, 
                 #Weather FIXME: Implement a weather API
                 {
+                "type": "function",
+                "function":{                    
                     "name": "get_weather",
                     "description": "Get the weather for a location",
                     "parameters": {
@@ -46,10 +52,12 @@ openai_function_documentation = [
                         },
                         "required": ["location"],
                     },
-                },
+                }},
                 
                 #Time
                 {
+                    "type": "function",
+                    "function":{
                     "name": "get_time",
                     "description": "Get the current time, only if the user specifically asks for it",
                     "parameters": {
@@ -62,8 +70,14 @@ openai_function_documentation = [
                         },
                        # "required": ["location"],
                     },
-                },
+                }}
+                
+                ,
                 {
+                    "type": "function",
+
+                    "function":{
+
                     "name": "public_transport_information",
                     "description": "Get the next train from A to B, including the time it takes to walk to the station",
                     "parameters": {
@@ -89,6 +103,7 @@ openai_function_documentation = [
                         },
                        "required": ["destination"],
                     },
+                }
                 },
                 
               #  {

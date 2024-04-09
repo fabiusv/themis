@@ -42,6 +42,7 @@ async def ping():
 
 async def complete(user_id:str, api_key: str, chatResponse: APIDatamodels.ChatResponseRequest):
     if validate(user_id, api_key):
+        print("in complete")
         context_manager = ContextDatabaseManager()
         
 
@@ -52,6 +53,9 @@ async def complete(user_id:str, api_key: str, chatResponse: APIDatamodels.ChatRe
             
             #duplicated code to reduce database operations in order to decrease latency
             response = handler.completion(context)
+            context.conversation.messages = response
+            print("sent messages")
+            print(context.conversation.messages)
 
             context.last_modification = datetime.datetime.now()
             
@@ -75,6 +79,8 @@ async def complete(user_id:str, api_key: str, chatResponse: APIDatamodels.ChatRe
             #call Themis Handler with context
             response = handler.completion(context)
             context.conversation.messages = response
+            print("sent messages")
+            print(context.conversation.messages)
 
             context.last_modification = datetime.datetime.now()
             

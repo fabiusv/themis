@@ -4,6 +4,23 @@ from .ChatMessage import ChatMessage
 
 class Conversation(pydantic.BaseModel):
 	messages: list[ChatMessage] = []
+
+
+	def convert_openai_assistants(self):
+		new_messages = []
+
+		for message in self.messages:
+			new_messages.append(
+				{
+				"role": message.role,
+				"content": message.content,
+				"file_ids": message.file_ids,
+				}
+			)
+		print(new_messages)
+		return new_messages
+
+
 	def convertToOpenAI(self, remove_inserts = True):
 		tempChatHistory = []
 		for message in self.messages:
@@ -28,4 +45,8 @@ class Conversation(pydantic.BaseModel):
 	@staticmethod
 	def decode(conversation_dict):
 		return Conversation(messages=[ChatMessage.decode(message_dict) for message_dict in conversation_dict["messages"]])
+
+	@staticmethod 
+	def dummy():
+		return Conversation(messages=[ChatMessage(role="system", content="dummy")]) 
 

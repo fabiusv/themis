@@ -8,3 +8,6 @@ class Location(pydantic.BaseModel):
     @staticmethod
     def decode(location_dict):
         return Location(lat=location_dict["lat"], lng=location_dict["lng"])
+    @staticmethod
+    def dummy():
+        return Location(lat=0, lng=0)

@@ -40,29 +40,30 @@ while run.status != "completed":
         thread_id=thread.id,
         run_id=run.id
     )
-    
-
-messages = client.beta.threads.messages.list(thread_id=thread.id)
-print(messages)
-
+import pickle
+import pydantic
+messages = list(client.beta.threads.messages.list(thread_id=thread.id))
 
 
+	
 
 
-import os
+def deserialize_messages(serialized_messages):
+    messages = []
 
-os.environ["GOOGLE_CSE_ID"] = "c4415157c33794318"
-os.environ["GOOGLE_API_KEY"] = os.getenv("gcloud_api_key")
+    for message in serialized_messages:
+        messages.append(
+            {
+            "role": message.role,
+            "content": message.content,
+            "file_ids": message.file_ids,
+            }
+        )
 
-from langchain.tools import Tool
-from langchain_community.utilities import GoogleSearchAPIWrapper
+        
+    return messages
 
-search = GoogleSearchAPIWrapper()
-
-tool = Tool(
-    name="Google Search",
-    description="Search Google for recent results.",
-    func=search.run,
+thread = client.beta.threads.create(
+    messages=deserialize_messages(serialized_messages)
 )
 
-print(tool.run("Obama's first name?"))

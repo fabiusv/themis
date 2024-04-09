@@ -20,3 +20,7 @@ class Context(pydantic.BaseModel):
    @staticmethod
    def decode(context_dict):
       return Context(user_id=context_dict["user_id"], context_id=context_dict["context_id"], creation=datetime.datetime.fromtimestamp(context_dict["creation"]), last_modification=datetime.datetime.fromtimestamp(context_dict["last_modification"]), expiry=datetime.datetime.fromtimestamp(context_dict["expiry"]) if context_dict["expiry"] else None, conversation=Conversation.decode(context_dict["conversation"]), meta_data=MetaData.decode(context_dict["meta_data"]))
+
+   @staticmethod
+   def dummy():
+      return Context(user_id="dummy", context_id="dummy", creation=datetime.datetime.now(), last_modification=datetime.datetime.now(), conversation=Conversation.dummy(), meta_data=MetaData.dummy())
