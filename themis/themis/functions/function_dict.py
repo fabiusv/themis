@@ -3,112 +3,217 @@ from .time.time import get_time
 import datetime
 from .maps.routes.routes import public_transport_route_fetching_handler
 from .maps.places.places import place_search_handler
-
+from .calendar.gcal import CalendarHandler
 function_dict = {
-    "realtime_websearch": performSearch,
-    "get_time": get_time,
-    "public_transport_information" : public_transport_route_fetching_handler,
-    "search_place_information": place_search_handler
+    "internet_suche": performSearch,
+    "zeit_abrufen": get_time,
+    "public_transport_abrufen" : public_transport_route_fetching_handler,
+    "search_place_information": place_search_handler,
+    "kalender_abrufen": CalendarHandler.fetch_calendar,
+    "search": CalendarHandler.search,
+    "kalender_ereignis_erstellen": CalendarHandler.create_event,
+    "kalender_ereignis_verschieben": CalendarHandler.move_event,
+    "kalender_ereignis_loeschen": CalendarHandler.delete_event,
+    "kalender_ereignis_bearbeiten": CalendarHandler.edit_event
 }
 
 openai_function_documentation = [
-                #Google Search
-				{
-					"name": "realtime_websearch",
-					"description": "Search google for an answer to a question",
-					"parameters": {
-						"type": "object",
-						"properties": {
-							"searchquery": {
-								"type": "string",
-								"description": "The unambiguous search query generated from the conversation history",
-							},
-
-						},
-						"required": ["searchquery"],
-					},
-				}, 
-                #Weather FIXME: Implement a weather API
-                {
-                    "name": "get_weather",
-                    "description": "Get the weather for a location",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "location": {
-                                "type": "string",
-                                "description": "The location to get the weather for",
-                            },
-                            "time": {
-                                "type": "string",
-                                "description": "The ISO formatted date to get the weather for. The current ISO date is: " + str(datetime.datetime.now()),
-                            },
-                        },
-                        "required": ["location"],
-                    },
+    {
+        
+        "type": "function",
+        "function": {
+            "name": "internet_suche",
+            "description": "Suche bei Google nach einer Antwort auf eine Frage",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "searchquery": {
+                        "type": "string",
+                        "description": "Die eindeutige Suchanfrage als ganze Frage (nicht als Stichpunkte) die aus dem Gesprächsverlauf generiert wurde"
+                    }
                 },
-                
-                #Time
-                {
-                    "name": "get_time",
-                    "description": "Get the current time, only if the user specifically asks for it",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "location": {
-                                "type": "string",
-                                "description": "The location to get the time for",
-                            },
-                        },
-                       # "required": ["location"],
+                "required": ["searchquery"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "wetter_abrufen",
+            "description": "Rufe das Wetter für einen Ort ab",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "Der Ort, für den du das Wetter wissen möchtest"
                     },
+                    "time": {
+                        "type": "string",
+                        "description": "Das ISO-formatierte Datum, für das du das Wetter wissen möchtest. Das aktuelle ISO-Datum ist: " + str(datetime.datetime.now())
+                    }
                 },
-                {
-                    "name": "public_transport_information",
-                    "description": "Get the next train from A to B, including the time it takes to walk to the station",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "origin": {
-                                "type": "string", 
-                                "description": "The location the user wants to start from. LEAVE EMPTY TO USE CURRENT LOCATION",
-                            },
-                            "destination": {
-                                "type": "string",
-                                "description": "The destination location",
-                            },
-                            "en_departure_time": {
-                                "type": "string",
-                                "description": "The string date expression of the departure time. Allways translate to english",
-                            },
-                            "en_arrival_time": {
-                                "type": "string",
-                                "description": "The string date expression of the wished arrival time. Allways translate to english",
-                            }
-
-                        },
-                       "required": ["destination"],
+                "required": ["location"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "zeit_abrufen",
+            "description": "Rufe die aktuelle Uhrzeit ab, nur wenn du speziell danach fragst",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "Der Ort, für den du die Uhrzeit wissen möchtest"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "public_transport_abrufen",
+            "description": "Rufe die nächste Zugverbindung von A nach B ab, inklusive der Gehzeit zur Station",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "origin": {
+                        "type": "string",
+                        "description": "Der Ort, von dem du starten möchtest. LEER LASSEN, UM DEN AKTUELLEN STANDORT ZU VERWENDEN"
                     },
+                    "destination": {
+                        "type": "string",
+                        "description": "Der Zielort"
+                    },
+                    "en_departure_time": {
+                        "type": "string",
+                        "description": "Der Datumausdruck für die Abfahrtszeit. Immer ins Englische übersetzen"
+                    },
+                    "en_arrival_time": {
+                        "type": "string",
+                        "description": "Der Datumausdruck für die gewünschte Ankunftszeit. Immer ins Englische übersetzen"
+                    }
                 },
-                
-              #  {
-               #     "name": "search_place_information",
-                #    "description": "Search places on google maps like restaurants and hotels, only if the user specifically asks for it, e.g. with the phrase: 'What restaurnts are near me'",
-                 #   "parameters": {
-                  #      "type": "object",
-                   #     "properties": {
-                    #         "query": {
-					#			"type": "string",
-					#			"description": "The google maps query to search for places",
-					#		},
-                     #        "num_places": {
-                      #          "type": "integer",
-                       #         "description": "The number of places to return if the user asks for more places after a prior maps search, 3 is used if nothing is specified",
-                       #      }
-                       # },
-                    #    "required": ["query", "num_places"],
-                   # },
-              #  },
-                
-
-			]
+                "required": ["destination"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "kalender_abrufen",
+            "description": "Rufe alle Ereignisse aus dem Kalender ab. Finde das zum Prompt passende Ereignis und nutze es, um mit den Aufgaben fortzufahren oder stelle weitere Fragen, um die Aufgabe zu klären",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "start_time": {
+                        "type": "string",
+                        "description": "Die Startzeit des ersten Ereignisses der Liste im ISO-Format. Wenn nicht anders verlangt nicht angeben um alle Ereignisse abzurufen"
+                    }
+                },
+                "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "kalender_ereignis_erstellen",
+            "description": "Erstellt ein neues Ereignis im Kalender",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "start": {
+                        "type": "string",
+                        "description": "Die Startzeit des Ereignisses im ISO-Format"
+                    },
+                    "end": {
+                        "type": "string",
+                        "description": "Die Endzeit des Ereignisses im ISO-Format"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Der Titel des Ereignisses"
+                    }
+                },
+                "required": ["start", "end"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "kalender_ereignis_verschieben",
+            "description": "Verschiebt ein Ereignis im Kalender",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "Die über die 'kalender_abrufen' Funktion erlangte ID des Ereignisses"
+                    },
+                    "start": {
+                        "type": "string",
+                        "description": "Die neue Startzeit des Ereignisses im ISO-Format"
+                    },
+                    "end": {
+                        "type": "string",
+                        "description": "Die neue Endzeit des Ereignisses im ISO-Format"
+                    }
+                },
+                "required": ["event_id", "start", "end"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "kalender_ereignis_loeschen",
+            "description": "Löscht ein Ereignis aus dem Kalender",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "Die über die 'kalender_abrufen' Funktion erlangte ID des Ereignisses"
+                    }
+                },
+                "required": ["event_id"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "kalender_ereignis_bearbeiten",
+            "description": "Bearbeitet ein Ereignis im Kalender",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "event_id": {
+                        "type": "string",
+                        "description": "Die über die 'kalender_abrufen' Funktion erlangte ID des Ereignisses"
+                    },
+                    "start": {
+                        "type": "string",
+                        "description": "Die neue Startzeit des Ereignisses im ISO-Format"
+                    },
+                    "end": {
+                        "type": "string",
+                        "description": "Die neue Endzeit des Ereignisses im ISO-Format"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Der neue Titel des Ereignisses"
+                    }
+                },
+                "required": ["event_id"]
+            }
+        }
+    
+    }
+]

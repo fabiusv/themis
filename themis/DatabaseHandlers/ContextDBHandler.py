@@ -3,14 +3,17 @@ from pymongo.server_api import ServerApi
 import datetime
 from dotenv import load_dotenv
 import os
+import certifi
 
 class ContextDatabaseManager():
    def __init__(self):
       load_dotenv()
 
       key = os.getenv("mongodb_key")
+      ca = certifi.where()
+
       uri = "mongodb+srv://fabiusv:"+ key + "@themiscluster.destxlo.mongodb.net/?retryWrites=true&w=majority"
-      self.client = MongoClient(uri, server_api=ServerApi('1'))
+      self.client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=ca)
       self.db = self.client["themis"]
       self.collection = self.db["context"]
 

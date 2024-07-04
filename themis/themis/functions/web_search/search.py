@@ -5,7 +5,7 @@ from ...functions import summary
 import requests
 from bs4 import BeautifulSoup
 import json
-from .fetchers import PageTextAPI, SnippetFetcher
+from .fetchers import PageTextAPI, SnippetFetcher, perplexity_fetcher
 from .helpers import web_formatter
 from ...localization.localizer import get_localization
 
@@ -18,6 +18,10 @@ def get_website_text(url):
 
 
 def performSearch(meta_data, arguments, is_routine=False):
+    input_query = arguments["searchquery"]
+    return perplexity_fetcher.fetch_perplexity(input_query)
+
+    return 
     #TODO: Do all of this concurrently in order to reduce latency
 
     localization = get_localization(meta_data.language)

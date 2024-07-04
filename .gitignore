@@ -11,3 +11,5 @@ task_tracker.md
 authentication
 notes.py
 *.env
+credentials
+markdown

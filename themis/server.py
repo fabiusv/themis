@@ -1,11 +1,12 @@
 from typing import Union
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional
+from dotenv import load_dotenv
 import datetime
-
 import uuid
+import os
 
 from DatabaseHandlers.ContextDBHandler import ContextDatabaseManager
 from DatabaseHandlers.UserDBHandler import UserDatabaseManager
@@ -18,6 +19,8 @@ import themis.Dataclasses as dtc
 
 app = FastAPI()
 handler = themis.ThemisHandler()
+
+
 
 def validate(user_id: str, api_key):
     print(user_id)
@@ -42,16 +45,25 @@ async def ping():
 
 async def complete(user_id:str, api_key: str, chatResponse: APIDatamodels.ChatResponseRequest):
     if validate(user_id, api_key):
+        print("in complete")
         context_manager = ContextDatabaseManager()
         
 
         if chatResponse.context_id is None:
             context_id = str(uuid.uuid4())
             context = themis.Context(user_id=user_id, context_id=context_id, creation=datetime.datetime.now(), last_modification=datetime.datetime.now(), conversation=themis.Conversation(messages=[]), meta_data=themis.MetaData(location=themis.Location(lat=chatResponse.location.lat, lng=chatResponse.location.lng), timezone=chatResponse.timezone, language=chatResponse.language))
-            context.conversation.messages.append(themis.ChatMessage(role="user", content=chatResponse.message))
             
+            context.conversation.messages.append(themis.ChatMessage(role="user", content=chatResponse.message))
+            context = handler.preprocess(context)
+
+            
+
             #duplicated code to reduce database operations in order to decrease latency
             response = handler.completion(context)
+            context.conversation.messages = response
+            print("sent messages")
+            print(context.conversation.messages)
+            
 
             context.last_modification = datetime.datetime.now()
             
@@ -72,9 +84,11 @@ async def complete(user_id:str, api_key: str, chatResponse: APIDatamodels.ChatRe
 
             
             
-            #call Themis Handler with context
+            #call Themis Handler with context^
             response = handler.completion(context)
             context.conversation.messages = response
+            print("sent messages")
+            print(context.conversation.messages)
 
             context.last_modification = datetime.datetime.now()
             
@@ -89,10 +103,19 @@ async def function_calling(user_id: str, api_key: str, function_calling_object: 
     if validate(user_id, api_key):
         #call function
         return {"success": True}
+    
+    
 
+@app.get("/update_notion/user/{user_id}/key/{api_key}")
+async def update_notion(user_id: str, api_key: str, background_tasks: BackgroundTasks):
+    if validate(user_id, api_key):
+        load_dotenv()
 
-
-
+        from themis.functions.notion.fetch_notion import fetch_upload_notion_files
+        background_tasks.add_task(fetch_upload_notion_files, vector_store_id=os.getenv("notion_vector_store_id"), open_ai_wrapper=handler.chat_instance)
+        #call function
+        
+        return {"success": True}
 
 @app.post("/register")
 async def register(user: APIDatamodels.RegisterRequest):
@@ -124,7 +147,6 @@ async def get_api_key(user: APIDatamodels.RegisterRequest):
 
 #uvicorn server:app --host 0.0.0.0 --port 80 --reload
 
-
 @app.post("/edit_person_file/user/{user_id}/key/{api_key}")
 async def edit_person_file(user_id: str, api_key: str, person_file: APIDatamodels.PersonFileRequest):
     if validate(user_id, api_key):
@@ -136,3 +158,4 @@ async def edit_person_file(user_id: str, api_key: str, person_file: APIDatamodel
         return {"success": True}
     else:
         raise HTTPException(status_code=401, detail="Invalid Credentials")
+

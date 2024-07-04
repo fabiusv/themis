@@ -3,9 +3,11 @@ import datetime
 from dateutil.relativedelta import relativedelta
 import time
 from geopy.geocoders import Nominatim
+import geopy.geocoders
 from timezonefinder import TimezoneFinder
 import parsedatetime as pdt # $ pip install parsedatetime
-
+import certifi
+import ssl
 
 def nlp_time_parser_utc(date_string):
     print(date_string)
@@ -13,7 +15,6 @@ def nlp_time_parser_utc(date_string):
         cal = pdt.Calendar()
         # now in utc
         now = datetime.datetime.now()
-        print(now)
         result = cal.parseDT(date_string, now)[0] 
         #result to utc
         result = result.astimezone(pytz.utc)
@@ -25,7 +26,7 @@ def nlp_time_parser_utc(date_string):
         print(e)
         return None
 
-print(nlp_time_parser_utc("8:00 PM"))
+print(nlp_time_parser_utc("In two weeks"))
 
 def get_ISO_8601_formatted_datetime(location) -> str:
     if not location: #TODO: Or location is in germany
@@ -43,7 +44,8 @@ def get_ISO_8601_formatted_datetime(location) -> str:
 def get_timezone(parameters):
     
     timezone_finder = TimezoneFinder()
-
+    ctx = ssl.create_default_context(cafile=certifi.where())
+    geopy.geocoders.options.default_ssl_context = ctx
     geolocator = Nominatim(user_agent="edith_country")
     location = geolocator.geocode(parameters)
     timezone = str(timezone_finder.timezone_at(lat=location.latitude, lng=location.longitude))

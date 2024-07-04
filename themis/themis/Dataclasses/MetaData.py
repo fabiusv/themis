@@ -10,3 +10,6 @@ class MetaData(pydantic.BaseModel):
   @staticmethod
   def decode(meta_data_dict):
     return MetaData(location=Location.decode(meta_data_dict["location"]), timezone=meta_data_dict["timezone"], language=meta_data_dict["language"])
+  @staticmethod
+  def dummy():
+    return MetaData(location=Location.dummy(), timezone="dummy", language="dummy")

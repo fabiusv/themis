@@ -3,14 +3,16 @@ from pymongo.server_api import ServerApi
 from themis import Dataclasses
 from dotenv import load_dotenv
 import os
+import certifi
 
 class UserDatabaseManager():
    def __init__(self):
       load_dotenv()
+      ca = certifi.where()
 
       key = os.getenv("mongodb_key")
       uri = "mongodb+srv://fabiusv:"+ key + "@themiscluster.destxlo.mongodb.net/?retryWrites=true&w=majority"
-      self.client = MongoClient(uri, server_api=ServerApi('1'))
+      self.client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=ca)
       self.db = self.client["themis"]
       self.collection = self.db["users"]
 
