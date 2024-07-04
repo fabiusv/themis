@@ -26,3 +26,9 @@ timezonefinder==5.2.0
 geopy
 python-dotenv
 lxml_html_clean
+notion-exporter
+google-cloud
+google-auth
+google-auth-httplib2
+google-auth-oauthlib
+google-api-python-client

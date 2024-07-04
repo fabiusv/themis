@@ -13,74 +13,30 @@ class ThemisHandler():
 	def __init__(self):
 		self.chat_instance = OpenAIChat()
 		self.conversation = Conversation() #FIXME: Do not use conversation as a class attribute as this does not ensure conversation integrity
+
+	
 	
 	def completion(self, context):
+		context = self.preprocess(context)
 
 		self.conversation.messages = context.conversation.messages
 
 		localization = get_localization(context.meta_data.language)
 
 		self.conversation.messages = context.conversation.messages
+
 		response = self.chat_instance.sendConversation(self.conversation, context)
+
 		if not response.error:
 			self.conversation.messages = response.result
 		else:
-			self.conversation.messages.append(ChatMessage(role="system", content="error"))
+			self.conversation.messages.append(ChatMessage(role="assistant", content="Ein Fehler ist aufgetreten."))
 		return self.conversation.messages
-	
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if __name__ == "__main__":
-	localization = localization = get_localization("de")
-
-	chat_instance = OpenAIChat()
-
-	print("chat instance created")
-	#Initialize chat conversation
-	conversation = Conversation()
-	conversation.messages = [ChatMessage(role="system", content=localization["default_conversation"])]
-
-	while True: #FIXME: Handle openai.error.RateLimitError 
-		message = input("User: ")
-		conversation.messages.append(ChatMessage(role="user", content=message))
-		
-		response = chat_instance.sendConversation(conversation)
-
-		#function call required
-		if response.result and response.result.get("function_call"):
-
-			response = response.result
-			arguments = json.loads(response["function_call"]["arguments"])
-			name = response["function_call"]["name"]
-
-			function_response = function_dict[name](arguments)
-			
-			conversation.messages.append(ChatMessage(role="user", content=function_response, is_insert=True))
-			
-			response = chat_instance.sendConversation(conversation, "none")
-			response = response.result #FIXME: Change variable name to prevent confusion
-
-			conversation.messages.append(Dataclasses.ChatMessage(role="user", content=response["content"]))  #type: ignore
-
-		#no function call required:
-		elif response.result:
-			
-			response = response.result
-		else:
-			conversation.messages.append(ChatMessage(role="assistant", content=response["content"]))
-
-			
-			print(response.error) #return to client 
+	@staticmethod
+	def preprocess(context):
+			message = context.conversation.messages[-1].content
+			if "notizen" in message.lower():
+				print("Notizen")
+				context.extra_functions.append({"type":"file_search"})
+			return context

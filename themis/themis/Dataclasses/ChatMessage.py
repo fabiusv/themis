@@ -1,11 +1,11 @@
 import pydantic
-
+from typing import List
 class ChatMessage(pydantic.BaseModel):
   role: str
   content: str 
   id: str = "ExampleID"
   is_insert: bool = False
-  file_ids: int = []
+  file_ids: List[int] = []
   
   def encode(self):  
     return {"role": self.role, "content": self.content, "is_insert": self.is_insert, "id": self.id, "file_ids": self.file_ids} 

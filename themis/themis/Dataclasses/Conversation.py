@@ -14,7 +14,7 @@ class Conversation(pydantic.BaseModel):
 				{
 				"role": message.role,
 				"content": message.content,
-				"file_ids": message.file_ids,
+				#"file_ids": message.file_ids,
 				}
 			)
 		print(new_messages)
