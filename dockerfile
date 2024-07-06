@@ -9,32 +9,88 @@ COPY themis/ .
 
 # Install dependencies
 RUN pip install numpy \
-	fastapi \
-	openai \
-	parsedatetime==2.6 \
-	pycountry==22.3.5 \
-	pydantic==2.0.3 \
-	pydantic_core==2.3.0 \
-	pymongo==4.4.1 \
-	pytz==2023.3 \
-	PyYAML==6.0.1 \
-	regex==2023.6.3 \
-	requests==2.31.0 \
-	setuptools==67.6.1 \
-	starlette==0.27.0 \
-	sumy==0.11.0 \
-	tqdm==4.65.0 \
-	tzwhere==3.0.3 \
-	urllib3==2.0.3 \
-	uvicorn \
-	python-dateutil \
+	annotated-types \
+	anyio \
+	azure-cognitiveservices-speech \
 	beautifulsoup4 \
-	uvloop \
-	watchfiles==0.19.0 \
-	websockets==11.0.3 \
-	timezonefinder==5.2.0 \
+	breadability \
+	cachetools \
+	certifi \
+	chardet \
+	charset-normalizer \
+	cleo \
+	click \
+	crashtest \
+	defusedxml \
+	distro \
+	dnspython \
+	docopt \
+	fastapi \
+	geographiclib \
 	geopy \
-	python-dotenv
+	google-api-core \
+	google-api-python-client \
+	google-auth \
+	google-auth-httplib2 \
+	google-auth-oauthlib \
+	google-cloud \
+	googleapis-common-protos \
+	h11 \
+	httpcore \
+	httplib2 \
+	httpx \
+	idna \
+	joblib \
+	keyboard \
+	lxml \
+	lxml_html_clean \
+	nltk \
+	notion-client \
+	notion-exporter \
+	notion2md \
+	numpy \
+	oauthlib \
+	openai \
+	parsedatetime \
+	pip \
+	proto-plus \
+	protobuf \
+	pyasn1 \
+	pyasn1_modules \
+	pycountry \
+	pydantic \
+	pydantic_core \
+	pymongo \
+	pymstodo \
+	pyparsing \
+	python-dateutil \
+	python-dotenv \
+	pytz \
+	PyYAML \
+	rapidfuzz \
+	regex \
+	requests \
+	requests-oauthlib \
+	rsa \
+	setuptools \
+	shapely \
+	six \
+	sniffio \
+	soupsieve \
+	starlette \
+	sumy \
+	tenacity \
+	timezonefinder \
+	tqdm \
+	typing_extensions \
+	tzwhere \
+	uritemplate \
+	urllib3 \
+	uvicorn \
+	uvloop \
+	watchfiles \
+	websockets
+
 	
 # Expose port 80
 EXPOSE 4034
